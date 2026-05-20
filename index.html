@@ -154,6 +154,15 @@ input, textarea { font-family: inherit; }
         <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Carbs (g)</label><input class="inp" type="number" id="manualCarb" placeholder="0" /></div>
         <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Fat (g)</label><input class="inp" type="number" id="manualFat" placeholder="0" /></div>
       </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:6px;">Quantity (servings)</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="adjustQty('manualQty',-0.5)" style="background:#22263a;border:1px solid #2d3748;border-radius:8px;color:#6ee7b7;font-size:20px;cursor:pointer;padding:2px 12px;">-</button>
+          <input class="inp" type="number" id="manualQty" value="1" min="0.25" step="0.25" style="width:60px;text-align:center;" />
+          <button onclick="adjustQty('manualQty',0.5)" style="background:#22263a;border:1px solid #2d3748;border-radius:8px;color:#6ee7b7;font-size:20px;cursor:pointer;padding:2px 12px;">+</button>
+          <span style="font-size:11px;color:#94a3b8;">e.g. 0.5 = half serving</span>
+        </div>
+      </div>
       <div style="background:#22263a;border-radius:10px;padding:10px 12px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <input type="checkbox" id="saveToMenuCheck" style="width:16px;height:16px;accent-color:#6ee7b7;cursor:pointer;" onchange="document.getElementById('menuSectionPicker').style.display=this.checked?'flex':'none'" />
@@ -179,12 +188,12 @@ input, textarea { font-family: inherit; }
     <div style="display:flex;gap:8px;margin-bottom:14px;">
       <div style="flex:1;background:#22263a;border-radius:12px;padding:10px 4px;text-align:center;"><div id="s-eaten" style="font-size:15px;font-weight:800;color:#fbbf24;">0</div><div style="font-size:9px;color:#94a3b8;">Eaten</div></div>
       <div style="flex:1;background:#22263a;border-radius:12px;padding:10px 4px;text-align:center;"><div id="s-burned" style="font-size:15px;font-weight:800;color:#94a3b8;">0</div><div style="font-size:9px;color:#94a3b8;">Burned</div></div>
-      <div style="flex:1;background:#22263a;border-radius:12px;padding:10px 4px;text-align:center;"><div id="s-net" style="font-size:15px;font-weight:800;color:#fbbf24;">0</div><div style="font-size:9px;color:#94a3b8;">Net Cal</div></div>
+      <div style="display:none;"><div id="s-net">0</div></div>
       <div style="flex:1;background:#22263a;border-radius:12px;padding:10px 4px;text-align:center;"><div id="s-protein" style="font-size:15px;font-weight:800;color:#fbbf24;">0g</div><div style="font-size:9px;color:#94a3b8;">Protein</div></div>
     </div>
     <div id="macroBarProtein"></div>
     <div id="macroBarCalories"></div>
-    <div id="macroBarSugar"></div>
+    <div id="macroBarSugar" style="display:none;"></div>
     <div id="macroBarCarbs"></div>
   </div>
 
@@ -424,6 +433,9 @@ let S={
 };
 
 async function loadPersistent(){
+  // Force menu reset to pick up latest DEFAULT_MENU
+  localStorage.removeItem('kim_tracker_menu');
+  try { await window.storage.delete('kim_tracker_menu'); } catch(e) {}
   const keys=['kim_tracker_menu','kim_tracker_saved','kim_tracker_weekly','kim_tracker_weights'];
   for(const k of keys){
     try{
@@ -494,7 +506,7 @@ function macroBar(cid,label,value,goal,unit,inv){
 }
 
 function macroChips(item){
-  return`<div style="display:flex;gap:10px;flex-wrap:wrap;">${[['Cal',fmt(item.calories),'#fbbf24'],['Protein',fmt(item.protein)+'g','#6ee7b7'],['Sugar',fmt(item.sugar)+'g',item.sugar>15?'#f87171':'#94a3b8'],['Carbs',fmt(item.carbs)+'g','#94a3b8'],['Fat',fmt(item.fat)+'g','#94a3b8']].map(([l,v,c])=>`<div style="text-align:center;min-width:40px;"><div style="font-size:13px;font-weight:700;color:${c};">${v}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;">${l}</div></div>`).join('')}</div>`;
+  return`<div style="display:flex;gap:10px;flex-wrap:wrap;">${[['Cal',fmt(item.calories),'#fbbf24'],['Protein',fmt(item.protein)+'g','#6ee7b7'],['Carbs',fmt(item.carbs)+'g','#94a3b8'],['Fat',fmt(item.fat)+'g','#94a3b8']].map(([l,v,c])=>`<div style="text-align:center;min-width:40px;"><div style="font-size:13px;font-weight:700;color:${c};">${v}</div><div style="font-size:9px;color:#94a3b8;text-transform:uppercase;">${l}</div></div>`).join('')}</div>`;
 }
 
 function renderAll(){
@@ -522,7 +534,7 @@ function renderAll(){
 
   macroBar('macroBarProtein','Protein',t.protein,GOALS.protein,'g',false);
   macroBar('macroBarCalories','Calories',t.calories,GOALS.calories,' kcal',false);
-  macroBar('macroBarSugar','Sugar',t.sugar,GOALS.sugar,'g',true);
+  // macroBar('macroBarSugar','Sugar',t.sugar,GOALS.sugar,'g',true); // hidden
   macroBar('macroBarCarbs','Carbs',t.carbs,GOALS.carbs,'g',false);
 
   const cu=caloriesUnderGoal(), td=totalDeficit();
@@ -576,7 +588,7 @@ function renderExercises(){
 function renderFoodLog(){
   const log=document.getElementById('foodLog');
   if(!S.entries.length){log.innerHTML='<div style="text-align:center;color:#94a3b8;padding:20px 0;font-size:13px;">Nothing logged yet. Use Menu Guide, My Meals, or Paste Food from AI Lookup.</div>';return;}
-  log.innerHTML=S.entries.map((e,i)=>`<div class="food-row"><div style="flex:1;"><div style="font-size:13px;font-weight:600;">${e.name}</div><div style="font-size:11px;color:#94a3b8;">${fmt(e.calories)} cal - ${fmt(e.protein)}g protein - <span style="color:${e.sugar>10?'#fbbf24':'#94a3b8'}">${fmt(e.sugar)}g sugar</span> - <span style="color:${e.carbs>30?'#fbbf24':'#94a3b8'}">${fmt(e.carbs)}g carbs</span></div></div><div style="display:flex;gap:6px;"><button onclick="openEditEntry(${i})" style="background:none;border:none;color:#6ee7b7;font-size:12px;cursor:pointer;padding:4px;">edit</button><button onclick="removeEntry(${i})" style="background:none;border:none;color:#f87171;font-size:20px;cursor:pointer;">x</button></div></div>`).join('');
+  log.innerHTML=S.entries.map((e,i)=>`<div class="food-row" style="flex-direction:column;gap:6px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;"><div style="flex:1;"><div style="font-size:13px;font-weight:600;">${e.name}</div><div style="font-size:11px;color:#94a3b8;">${fmt(e.calories)} cal - ${fmt(e.protein)}g protein - <span style="color:${e.carbs>30?'#fbbf24':'#94a3b8'}">${fmt(e.carbs)}g carbs</span></div></div><div style="display:flex;gap:6px;align-items:center;"><button onclick="showQtyEdit(${i})" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#6ee7b7;font-size:11px;cursor:pointer;padding:3px 8px;">qty</button><button onclick="openEditEntry(${i})" style="background:none;border:none;color:#6ee7b7;font-size:12px;cursor:pointer;padding:4px;">edit</button><button onclick="removeEntry(${i})" style="background:none;border:none;color:#f87171;font-size:20px;cursor:pointer;">x</button></div></div><div id="qty-edit-${i}" style="display:none;background:#22263a;border-radius:8px;padding:8px 12px;"><div style="font-size:11px;color:#94a3b8;margin-bottom:6px;">Adjust quantity (multiplies all macros):</div><div style="display:flex;align-items:center;gap:8px;"><button onclick="adjustLogQty(${i},-0.25)" style="background:#0f1117;border:1px solid #2d3748;border-radius:6px;color:#6ee7b7;font-size:16px;cursor:pointer;padding:2px 10px;">-</button><input type="number" id="log-qty-${i}" value="1" min="0.25" step="0.25" style="width:50px;background:#0f1117;border:1px solid #2d3748;border-radius:6px;color:#e2e8f0;font-size:14px;font-weight:700;text-align:center;padding:4px;outline:none;" /><button onclick="adjustLogQty(${i},0.25)" style="background:#0f1117;border:1px solid #2d3748;border-radius:6px;color:#6ee7b7;font-size:16px;cursor:pointer;padding:2px 10px;">+</button><button onclick="applyLogQty(${i})" style="background:#6ee7b7;border:none;border-radius:6px;color:#0f1117;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;">Apply</button></div></div></div>`).join('');
 }
 
 function renderCoach(t,wOz){
@@ -956,6 +968,75 @@ window.confirmSaveMeal=function(){
   renderAll();
 };
 
+function showQtyEdit(i){
+  const el=document.getElementById('qty-edit-'+i);
+  if(!el) return;
+  const visible=el.style.display!=='none';
+  document.querySelectorAll('[id^="qty-edit-"]').forEach(e=>e.style.display='none');
+  if(!visible) el.style.display='block';
+}
+
+function adjustLogQty(i, delta){
+  const el=document.getElementById('log-qty-'+i);
+  if(!el) return;
+  el.value=Math.max(0.25, Math.round((parseFloat(el.value||1)+delta)*4)/4);
+}
+
+function applyLogQty(i){
+  const entry=S.entries[i];
+  if(!entry) return;
+  const qty=parseFloat(document.getElementById('log-qty-'+i)?.value||1);
+  const base=entry._base||{calories:entry.calories,protein:entry.protein,sugar:entry.sugar,carbs:entry.carbs,fat:entry.fat};
+  entry._base=base;
+  entry.calories=Math.round(base.calories*qty);
+  entry.protein=Math.round(base.protein*qty);
+  entry.sugar=Math.round(base.sugar*qty);
+  entry.carbs=Math.round(base.carbs*qty);
+  entry.fat=Math.round(base.fat*qty);
+  entry._qty=qty;
+  const qLabel=qty!==1?(qty<1?(" ("+qty+" serving)"):(" x"+qty)):"";
+  entry.name=(entry._baseName||entry.name.replace(/ x[\d.]+| \([\d.]+ serving\)/,""))+qLabel;
+  entry._baseName=entry._baseName||entry.name.replace(/ x[\d.]+| \([\d.]+ serving\)/,"");
+  persist(); renderAll(); showToast('Quantity updated!');
+}
+
+function showQtyEdit(i){
+  const el=document.getElementById('qty-edit-'+i);
+  if(!el) return;
+  const visible=el.style.display!=='none';
+  document.querySelectorAll('[id^="qty-edit-"]').forEach(e=>e.style.display='none');
+  if(!visible) el.style.display='block';
+}
+
+function adjustLogQty(i,delta){
+  const el=document.getElementById('log-qty-'+i);
+  if(!el) return;
+  el.value=Math.max(0.25,Math.round((parseFloat(el.value||1)+delta)*4)/4);
+}
+
+function applyLogQty(i){
+  const entry=S.entries[i];
+  if(!entry) return;
+  const qty=parseFloat(document.getElementById('log-qty-'+i)?.value||1);
+  if(!entry._base) entry._base={calories:entry.calories,protein:entry.protein,sugar:entry.sugar,carbs:entry.carbs,fat:entry.fat};
+  if(!entry._baseName) entry._baseName=entry.name;
+  entry.calories=Math.round(entry._base.calories*qty);
+  entry.protein=Math.round(entry._base.protein*qty);
+  entry.sugar=Math.round(entry._base.sugar*qty);
+  entry.carbs=Math.round(entry._base.carbs*qty);
+  entry.fat=Math.round(entry._base.fat*qty);
+  entry._qty=qty;
+  const qLabel=qty!==1?(qty<1?(' ('+qty+' serving)'):(' x'+qty)):'';
+  entry.name=entry._baseName+qLabel;
+  persist(); renderAll(); showToast('Quantity updated!');
+}
+
+function adjustQty(inputId, delta){
+  const el=document.getElementById(inputId);
+  if(!el) return;
+  el.value=Math.max(0.25, Math.round((parseFloat(el.value||1)+delta)*4)/4);
+}
+
 function toggleLogFood(){
   const body=document.getElementById('logFoodBody');
   const arrow=document.getElementById('logFoodArrow');
@@ -1019,7 +1100,9 @@ function addManualEntry(){
   const fat=parseFloat(document.getElementById('manualFat').value)||0;
   if(!name){showToast('Add a food name',true);return;}
   if(!cal&&!pro){showToast('Add at least calories or protein',true);return;}
-  const entry={name,calories:cal,protein:pro,sugar:sug,carbs:carb,fat,ingredients:name,id:'e_'+Date.now()};
+  const qty=parseFloat(document.getElementById('manualQty').value)||1;
+  const qLabel=qty!==1?(qty<1?(" ("+qty+" serving)"):(" x"+qty)):"";
+  const entry={name:name+qLabel,calories:Math.round(cal*qty),protein:Math.round(pro*qty),sugar:Math.round(sug*qty),carbs:Math.round(carb*qty),fat:Math.round(fat*qty),ingredients:name,id:'e_'+Date.now()};
   addEntry(entry);
   const saveChecked=document.getElementById('saveToMenuCheck').checked;
   if(saveChecked&&_pickerSection){
@@ -1033,7 +1116,7 @@ function addManualEntry(){
   } else {
     showToast('Logged!');
   }
-  ['manualName','manualCal','manualPro','manualSug','manualCarb','manualFat'].forEach(id=>{document.getElementById(id).value='';});
+  ['manualName','manualCal','manualPro','manualSug','manualCarb','manualFat'].forEach(id=>{document.getElementById(id).value='';}); document.getElementById('manualQty').value='1';;
   document.getElementById('saveToMenuCheck').checked=false;
   document.getElementById('menuSectionPicker').style.display='none';
   document.querySelectorAll('.picker-btn').forEach(b=>{b.style.background='#0f1117';b.style.color='#94a3b8';b.style.borderColor='#2d3748';});
