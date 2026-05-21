@@ -549,6 +549,7 @@ const DEFAULT_MENU={
     {id:'s9',name:'Dove Dark Chocolate + Almonds',items:'1 piece Dove dark chocolate with almonds',calories:80,protein:1,sugar:6,carbs:8,fat:5,satfat:2,fiber:1,approved:true,notes:'Your treat. Eat slowly.',useCount:0},
     {id:'s10',name:'Turkey Sausage Bite + Colby Cheese Cube',items:'1 turkey sausage bite, 1 cubed Colby cheese',calories:85,protein:7,sugar:0,carbs:1,fat:5,satfat:2,fiber:0,approved:true,useCount:0},
     {id:'s11b',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
+    {id:'s11b',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
     {id:'s12',name:'Oatmeal Raisin Cookie (1 large)',calories:200,protein:3,sugar:18,carbs:30,fat:8,satfat:2,fiber:1,approved:false,useCount:0},
   ],
   lunches:[
@@ -848,7 +849,18 @@ function renderProgress(){
   document.getElementById('weightProgressBar').style.width=pct+'%';
   document.getElementById('weightStats').innerHTML=[{l:'Starting Weight',v:START_WEIGHT+' lbs',c:'#94a3b8'},{l:'Current Weight',v:cw+' lbs',c:'#6ee7b7'},{l:'Lost So Far',v:lost.toFixed(1)+' lbs',c:lost>0?'#6ee7b7':'#94a3b8'},{l:'Lbs to Goal',v:toGo.toFixed(1)+' lbs',c:'#fbbf24'}].map(s=>`<div style="background:#22263a;border-radius:12px;padding:14px;"><div style="font-size:18px;font-weight:800;color:${s.c};">${s.v}</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">${s.l}</div></div>`).join('');
   const wh=document.getElementById('weightHistory');
-  if(S.weights.length>1)wh.innerHTML=`<div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:700;">Weight History</div>`+[...S.weights].reverse().map(w=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2d3748;"><span style="font-size:13px;color:#94a3b8;">${w.date}</span><span style="font-size:13px;font-weight:700;color:${w.dateKey==='start'?'#94a3b8':'#6ee7b7'};">${w.weight} lbs</span></div>`).join('');
+  if(S.weights.length>1)wh.innerHTML=`<div style="font-size:12px;color:#94a3b8;margin-bottom:8px;font-weight:700;">Weight History</div>`+[...S.weights].reverse().map((w,ri)=>{
+    const i=S.weights.length-1-ri;
+    if(w.dateKey==='start') return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2d3748;"><span style="font-size:13px;color:#94a3b8;">${w.date}</span><span style="font-size:13px;font-weight:700;color:#94a3b8;">${w.weight} lbs</span></div>`;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2d3748;">
+      <div><div style="font-size:13px;color:#94a3b8;">${w.date}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;font-weight:700;color:#6ee7b7;">${w.weight} lbs</span>
+        <button onclick="editWeight(${i})" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;cursor:pointer;font-size:11px;padding:3px 8px;">edit</button>
+        <button onclick="deleteWeight(${i})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:16px;">x</button>
+      </div>
+    </div>`;
+  }).join('');
   else wh.innerHTML='';
 
   const rd=S.weekly.slice(-7);
@@ -1126,6 +1138,45 @@ function addEntryFromMenu(section,id){const item=S.menu[section].find(x=>x.id===
 function logSavedMeal(i){addEntry(S.saved[i]);}
 function deleteSavedMeal(i){S.saved.splice(i,1);persist();renderSavedMeals();}
 function setMenuSection(sec){S.menuSection=sec;renderMenuGuide();}
+function editWeight(i){
+  const w=S.weights[i];
+  if(!w) return;
+  S._editing={type:'weight',idx:i};
+  document.getElementById('editItemName').value=w.date;
+  document.getElementById('editItemIngredients').value=w.weight;
+  document.getElementById('editItemCal').value='';
+  document.getElementById('editItemPro').value='';
+  document.getElementById('editItemSug').value='';
+  document.getElementById('editItemCarb').value='';
+  document.getElementById('editItemFat').value='';
+  document.getElementById('editItemSatFat').value='';
+  document.getElementById('editItemFiber').value='';
+  // Repurpose modal for weight edit
+  document.querySelector('#editItemModal .modal-box').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-weight:700;font-size:16px;">Edit Weight Entry</span><button onclick="document.getElementById('editItemModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:22px;">x</button></div>
+    <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Date</label>
+    <input class="inp" id="editWeightDate" value="${w.date}" style="margin-bottom:10px;" />
+    <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Weight (lbs)</label>
+    <input class="inp" type="number" id="editWeightVal" value="${w.weight}" style="margin-bottom:14px;" />
+    <button class="btn-green" onclick="saveWeightEdit(${i})" style="width:100%;">Save Changes</button>`;
+  document.getElementById('editItemModal').style.display='flex';
+}
+
+function saveWeightEdit(i){
+  const date=document.getElementById('editWeightDate').value.trim();
+  const weight=parseFloat(document.getElementById('editWeightVal').value);
+  if(!date||!weight) return;
+  S.weights[i]={...S.weights[i],date,weight};
+  document.getElementById('editItemModal').style.display='none';
+  persist();renderAll();showToast('Weight updated!');
+}
+
+function deleteWeight(i){
+  if(!confirm('Delete this weight entry?')) return;
+  S.weights.splice(i,1);
+  persist();renderAll();showToast('Entry deleted.');
+}
+
 function toggleWeightInput(){
   const r=document.getElementById('weightInputRow');
   const open=r.style.display==='none';
