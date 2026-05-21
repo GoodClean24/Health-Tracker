@@ -504,6 +504,39 @@ input, textarea { font-family: inherit; }
     </div>
     <div id="daysLogged"></div>
   </div>
+
+  <!-- Bloodwork Card -->
+  <div class="card" style="border-color:rgba(110,231,183,0.15);">
+    <div onclick="toggleBloodwork()" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+      <div>
+        <div style="font-weight:700;font-size:15px;">Bloodwork Tracker</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">Tap to view — retest in ~3-5 months</div>
+      </div>
+      <div id="bloodworkArrow" style="font-size:20px;color:#6ee7b7;">+</div>
+    </div>
+    <div id="bloodworkBody" style="display:none;margin-top:16px;">
+      <div id="bloodworkEntries"></div>
+      <button onclick="showAddBloodwork()" class="btn-ghost" style="width:100%;margin-top:12px;">+ Add New Blood Draw</button>
+      <div id="bloodworkForm" style="display:none;margin-top:14px;background:#22263a;border-radius:12px;padding:14px;">
+        <div style="font-weight:700;font-size:13px;color:#6ee7b7;margin-bottom:12px;">New Blood Draw</div>
+        <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Date</label>
+        <input class="inp" type="date" id="bwDate" style="margin-bottom:10px;" />
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Total Cholesterol</label><input class="inp" type="number" id="bwChol" placeholder="e.g. 249" /></div>
+          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">LDL</label><input class="inp" type="number" id="bwLdl" placeholder="e.g. 181" /></div>
+          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">HDL</label><input class="inp" type="number" id="bwHdl" placeholder="e.g. 47" /></div>
+          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Triglycerides</label><input class="inp" type="number" id="bwTrig" placeholder="e.g. 119" /></div>
+          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Fasting Glucose</label><input class="inp" type="number" id="bwGluc" placeholder="e.g. 107" /></div>
+          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">A1C (%)</label><input class="inp" type="number" id="bwA1c" placeholder="e.g. 5.8" step="0.1" /></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-green" onclick="saveBloodwork()" style="flex:1;">Save</button>
+          <button onclick="document.getElementById('bloodworkForm').style.display='none'" class="btn-ghost" style="flex:1;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card" style="border-color:rgba(110,231,183,0.2);">
     <div style="font-weight:700;font-size:15px;margin-bottom:4px;">Backup &amp; Restore</div>
     <div style="font-size:12px;color:#94a3b8;margin-bottom:14px;">Export before any app updates so you never lose your data.</div>
@@ -608,6 +641,7 @@ let S={
   menu:ls('kim_tracker_menu',DEFAULT_MENU),
   saved:ls('kim_tracker_saved',[{id:'sv_coffee',name:"Kim's Morning Coffee",calories:193,protein:4,sugar:25,carbs:26,fat:7,ingredients:'12oz Peets decaf coffee, 1.5oz Torani vanilla syrup, 2oz half and half, 2oz Fairlife fat free milk'}]),
   weekly:ls('kim_tracker_weekly',[]),
+  bloodwork:ls('kim_tracker_bloodwork',[{date:'May 2026',chol:249,ldl:181,hdl:47,trig:119,gluc:107,a1c:5.8}]),
   weights:ls('kim_tracker_weights',[{date:'Start',weight:START_WEIGHT,dateKey:'start'}]),
   menuSection:'breakfasts',
   activeTab:'daily',
@@ -646,6 +680,7 @@ function persist(){
   lsSave('kim_tracker_menu',S.menu);
   lsSave('kim_tracker_saved',S.saved);
   lsSave('kim_tracker_weekly',S.weekly);
+  lsSave('kim_tracker_bloodwork',S.bloodwork);
   lsSave('kim_tracker_weights',S.weights);
   try{window.storage.set('kim_tracker_menu',JSON.stringify(S.menu));}catch(e){}
   try{window.storage.set('kim_tracker_saved',JSON.stringify(S.saved));}catch(e){}
@@ -1493,6 +1528,107 @@ function renderExSleep(){
   }
 }
 
+function toggleBloodwork(){
+  const body=document.getElementById('bloodworkBody');
+  const arrow=document.getElementById('bloodworkArrow');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  arrow.textContent=open?'−':'+';
+  if(open) renderBloodwork();
+}
+
+function showAddBloodwork(){
+  const f=document.getElementById('bloodworkForm');
+  f.style.display=f.style.display==='none'?'block':'none';
+  if(f.style.display==='block'){
+    const now=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    document.getElementById('bwDate').value=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  }
+}
+
+function saveBloodwork(){
+  const dateVal=document.getElementById('bwDate').value;
+  if(!dateVal){showToast('Add a date',true);return;}
+  const d=new Date(dateVal+'T12:00:00');
+  const dateLabel=d.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  const entry={
+    date:dateLabel,dateKey:dateVal,
+    chol:parseFloat(document.getElementById('bwChol').value)||null,
+    ldl:parseFloat(document.getElementById('bwLdl').value)||null,
+    hdl:parseFloat(document.getElementById('bwHdl').value)||null,
+    trig:parseFloat(document.getElementById('bwTrig').value)||null,
+    gluc:parseFloat(document.getElementById('bwGluc').value)||null,
+    a1c:parseFloat(document.getElementById('bwA1c').value)||null,
+  };
+  S.bloodwork.push(entry);
+  S.bloodwork.sort((a,b)=>a.dateKey>b.dateKey?1:-1);
+  persist();
+  document.getElementById('bloodworkForm').style.display='none';
+  renderBloodwork();
+  showToast('Blood draw saved!');
+}
+
+function deleteBloodwork(i){
+  if(S.bloodwork.length<=1){showToast('Keep at least one entry',true);return;}
+  if(!confirm('Delete this blood draw?')) return;
+  S.bloodwork.splice(i,1);
+  persist();renderBloodwork();
+}
+
+function renderBloodwork(){
+  const metrics=[
+    {key:'chol',label:'Total Cholesterol',goal:200,unit:'mg',lowerBetter:true},
+    {key:'ldl',label:'LDL',goal:130,unit:'mg',lowerBetter:true},
+    {key:'hdl',label:'HDL',goal:60,unit:'mg',lowerBetter:false},
+    {key:'trig',label:'Triglycerides',goal:100,unit:'mg',lowerBetter:true},
+    {key:'gluc',label:'Fasting Glucose',goal:100,unit:'mg',lowerBetter:true},
+    {key:'a1c',label:'A1C',goal:5.7,unit:'%',lowerBetter:true},
+  ];
+  const el=document.getElementById('bloodworkEntries');
+  if(!el||!S.bloodwork.length) return;
+  el.innerHTML=metrics.map(m=>{
+    const vals=S.bloodwork.map(d=>({date:d.date,val:d[m.key]})).filter(x=>x.val!=null);
+    if(!vals.length) return '';
+    const latest=vals[vals.length-1];
+    const prev=vals.length>1?vals[vals.length-2]:null;
+    const atGoal=m.lowerBetter?latest.val<=m.goal:latest.val>=m.goal;
+    const close=m.lowerBetter?(latest.val<=m.goal*1.15):(latest.val>=m.goal*0.85);
+    const color=atGoal?'#6ee7b7':close?'#fbbf24':'#f87171';
+    // Bar: for lower-better, full bar = goal, red if over. For higher-better, full = goal.
+    const barPct=m.lowerBetter?Math.min((m.goal/latest.val)*100,100):Math.min((latest.val/m.goal)*100,100);
+    const trend=prev?(m.lowerBetter?(latest.val<prev.val?'↓ improved':'↑ higher'):(latest.val>prev.val?'↑ improved':'↓ lower')):null;
+    const trendColor=prev?(m.lowerBetter?(latest.val<prev.val?'#6ee7b7':'#f87171'):(latest.val>prev.val?'#6ee7b7':'#f87171')):null;
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+        <span style="font-size:12px;color:#94a3b8;">${m.label}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${trend?`<span style="font-size:11px;color:${trendColor};">${trend}</span>`:''}
+          <span style="font-size:14px;font-weight:700;color:${color};">${latest.val}${m.unit} <span style="font-size:10px;color:#94a3b8;">(${latest.date})</span></span>
+        </div>
+      </div>
+      <div style="background:#2d3748;border-radius:6px;height:8px;overflow:hidden;">
+        <div style="width:${barPct}%;height:100%;background:${color};border-radius:6px;transition:width 0.4s;"></div>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;margin-top:3px;">Goal: ${m.lowerBetter?'under':'over'} ${m.goal}${m.unit}</div>
+    </div>`;
+  }).join('');
+  // History per draw with delete
+  if(S.bloodwork.length>1){
+    el.innerHTML+=`<div style="font-size:11px;color:#94a3b8;font-weight:700;margin-top:16px;margin-bottom:8px;">All Draws</div>`+
+    [...S.bloodwork].reverse().map((d,ri)=>{
+      const i=S.bloodwork.length-1-ri;
+      return `<div style="background:#22263a;border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:#94a3b8;">${d.date}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:#e2e8f0;">LDL: ${d.ldl||'-'} · HDL: ${d.hdl||'-'} · Gluc: ${d.gluc||'-'}</span>
+          <button onclick="deleteBloodwork(${i})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:16px;">x</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
 function toggleLogFood(){
   const body=document.getElementById('logFoodBody');
   const arrow=document.getElementById('logFoodArrow');
@@ -1598,6 +1734,7 @@ function exportData(){
     saved:S.saved,
     weekly:S.weekly,
     weights:S.weights,
+    bloodwork:S.bloodwork,
     exportDate:now.toISOString(),
     dailyLog:{
       entries:S.entries,
@@ -1628,6 +1765,7 @@ function importData(e){
       if(data.saved) S.saved=data.saved;
       if(data.weekly) S.weekly=data.weekly;
       if(data.weights) S.weights=data.weights;
+      if(data.bloodwork) S.bloodwork=data.bloodwork;
       if(data.dailyLog){
         const dl=data.dailyLog;
         if(dl.entries) S.entries=dl.entries;
