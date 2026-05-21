@@ -1186,11 +1186,32 @@ function addManualEntry(){
 }
 
 function exportData(){
-  const data={menu:S.menu,saved:S.saved,weekly:S.weekly,weights:S.weights,exportDate:new Date().toISOString()};
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const h=now.getHours();
+  const ampm=h>=12?'pm':'am';
+  const h12=h%12||12;
+  const stamp=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}-${h12}-${pad(now.getMinutes())}${ampm}`;
+  const data={
+    menu:S.menu,
+    saved:S.saved,
+    weekly:S.weekly,
+    weights:S.weights,
+    exportDate:now.toISOString(),
+    dailyLog:{
+      entries:S.entries,
+      exercises:S.exercises,
+      steps:S.steps,
+      waterCups:S.waterCups,
+      milkLogged:S.milkLogged,
+      electroLogged:S.electroLogged,
+      dateKey:dk
+    }
+  };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='kim-tracker-backup.json';
+  a.download=`kim-tracker-${stamp}.json`;
   a.click();
   showToast('Backup exported!');
 }
@@ -1206,6 +1227,15 @@ function importData(e){
       if(data.saved) S.saved=data.saved;
       if(data.weekly) S.weekly=data.weekly;
       if(data.weights) S.weights=data.weights;
+      if(data.dailyLog){
+        const dl=data.dailyLog;
+        if(dl.entries) S.entries=dl.entries;
+        if(dl.exercises) S.exercises=dl.exercises;
+        if(dl.steps!==undefined) S.steps=dl.steps;
+        if(dl.waterCups!==undefined) S.waterCups=dl.waterCups;
+        if(dl.milkLogged!==undefined) S.milkLogged=dl.milkLogged;
+        if(dl.electroLogged!==undefined) S.electroLogged=dl.electroLogged;
+      }
       persist();renderAll();
       const msg=document.getElementById('importMsg');
       msg.textContent='Backup restored successfully!';
