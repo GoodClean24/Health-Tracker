@@ -842,7 +842,8 @@ function renderCoach(t,wOz){
 }
 
 function renderProgress(){
-  const cw=S.weights.length>1?S.weights[S.weights.length-1].weight:START_WEIGHT;
+  const nonStart=S.weights.filter(w=>w.dateKey!=='start').sort((a,b)=>a.dateKey>b.dateKey?1:-1);
+  const cw=nonStart.length>0?nonStart[nonStart.length-1].weight:START_WEIGHT;
   const lost=Math.max(0,START_WEIGHT-cw),toGo=Math.max(0,cw-GOAL_WEIGHT);
   const pct=Math.min((lost/(START_WEIGHT-GOAL_WEIGHT))*100,100);
   document.getElementById('progressPct').textContent=pct.toFixed(0)+'%';
