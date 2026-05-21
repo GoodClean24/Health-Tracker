@@ -548,6 +548,7 @@ const DEFAULT_MENU={
     {id:'s8',name:'Cottage Cheese + Pineapple',items:'1/2 cup cottage cheese, few pineapple chunks',calories:130,protein:14,sugar:10,carbs:15,fat:1,satfat:0,fiber:1,approved:true,useCount:0},
     {id:'s9',name:'Dove Dark Chocolate + Almonds',items:'1 piece Dove dark chocolate with almonds',calories:80,protein:1,sugar:6,carbs:8,fat:5,satfat:2,fiber:1,approved:true,notes:'Your treat. Eat slowly.',useCount:0},
     {id:'s10',name:'Turkey Sausage Bite + Colby Cheese Cube',items:'1 turkey sausage bite, 1 cubed Colby cheese',calories:85,protein:7,sugar:0,carbs:1,fat:5,satfat:2,fiber:0,approved:true,useCount:0},
+    {id:'s11b',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
     {id:'s12',name:'Oatmeal Raisin Cookie (1 large)',calories:200,protein:3,sugar:18,carbs:30,fat:8,satfat:2,fiber:1,approved:false,useCount:0},
   ],
   lunches:[
@@ -993,9 +994,9 @@ function addEntryFromMenuQty(sec, itemId, inputEl){
   if(!item) return;
   const qty=parseFloat((typeof inputEl==='string'?document.getElementById(inputEl):inputEl)?.value||1);
   item.useCount=(item.useCount||0)+1;
-  const base={calories:item.calories,protein:item.protein,sugar:item.sugar,carbs:item.carbs,fat:item.fat};
+  const base={calories:item.calories,protein:item.protein,sugar:item.sugar,carbs:item.carbs,fat:item.fat,satfat:item.satfat||0,fiber:item.fiber||0};
   const qLabel=qty!==1?(qty<1?(' ('+qty+' serving)'):(' x'+qty)):'';
-  addEntry({name:item.name+qLabel,calories:Math.round(base.calories*qty),protein:Math.round(base.protein*qty),sugar:Math.round(base.sugar*qty),carbs:Math.round(base.carbs*qty),fat:Math.round(base.fat*qty),id:'e_'+Date.now(),mealTag:sec,timestamp:Date.now(),_base:base,_baseName:item.name,_qty:qty});
+  addEntry({name:item.name+qLabel,calories:Math.round(base.calories*qty),protein:Math.round(base.protein*qty),sugar:Math.round(base.sugar*qty),carbs:Math.round(base.carbs*qty),fat:Math.round(base.fat*qty),satfat:Math.round(base.satfat*qty),fiber:Math.round(base.fiber*qty),id:'e_'+Date.now(),mealTag:sec,timestamp:Date.now(),_base:base,_baseName:item.name,_qty:qty});
   persist(); renderAll(); showToast('Logged!');
 }
 
@@ -1295,13 +1296,15 @@ function applyLogQty(i){
   const entry=S.entries[i];
   if(!entry) return;
   const qty=parseFloat(document.getElementById('log-qty-'+i)?.value||1);
-  if(!entry._base) entry._base={calories:entry.calories,protein:entry.protein,sugar:entry.sugar,carbs:entry.carbs,fat:entry.fat};
+  if(!entry._base) entry._base={calories:entry.calories,protein:entry.protein,sugar:entry.sugar,carbs:entry.carbs,fat:entry.fat,satfat:entry.satfat||0,fiber:entry.fiber||0};
   if(!entry._baseName) entry._baseName=entry.name;
   entry.calories=Math.round(entry._base.calories*qty);
   entry.protein=Math.round(entry._base.protein*qty);
   entry.sugar=Math.round(entry._base.sugar*qty);
   entry.carbs=Math.round(entry._base.carbs*qty);
   entry.fat=Math.round(entry._base.fat*qty);
+  entry.satfat=Math.round((entry._base.satfat||0)*qty);
+  entry.fiber=Math.round((entry._base.fiber||0)*qty);
   entry._qty=qty;
   const qLabel=qty!==1?(qty<1?(' ('+qty+' serving)'):(' x'+qty)):'';
   entry.name=entry._baseName+qLabel;
