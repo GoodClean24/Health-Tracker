@@ -494,6 +494,11 @@ input, textarea { font-family: inherit; }
     <div style="font-size:12px;color:#94a3b8;margin-bottom:14px;">3,500 cal deficit = 1 lb lost</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="projectionStats"></div>
   </div>
+  <div class="card" id="goalDateCard" style="display:none;">
+    <div style="font-weight:700;font-size:15px;margin-bottom:4px;">Projected Goal Date</div>
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:14px;">Based on your actual weigh-ins.</div>
+    <div id="goalDateContent"></div>
+  </div>
   <div class="card">
     <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Days Logged</div>
     <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Green = all 3 goals hit. Yellow = 2 of 3. Red = missed.</div>
@@ -932,6 +937,45 @@ function renderProgress(){
   const avgDailyDef=rd.length?wd/rd.length:0;
   const pm=Math.round(avgDailyDef*30/3500*10)/10;
   document.getElementById('projectionStats').innerHTML=[{l:'Total Deficit This Week',v:wd.toLocaleString()+' cal',c:'#fbbf24'},{l:'Projected Loss This Week',v:pw+' lbs',c:'#6ee7b7'},{l:'Projected This Month',v:pm+' lbs',c:'#6ee7b7'},{l:'Days Logged',v:rd.length+' days',c:'#fbbf24'}].map(s=>`<div style="background:#22263a;border-radius:12px;padding:14px;"><div style="font-size:20px;font-weight:800;color:${s.c};">${s.v}</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">${s.l}</div></div>`).join('');
+
+  // Projected goal date based on actual weigh-ins
+  const realWeights=S.weights.filter(w=>w.dateKey&&w.dateKey!=='start').sort((a,b)=>a.dateKey>b.dateKey?1:-1);
+  const goalCard=document.getElementById('goalDateCard');
+  const goalContent=document.getElementById('goalDateContent');
+  if(realWeights.length>=2&&goalCard&&goalContent){
+    goalCard.style.display='block';
+    const first=realWeights[0];
+    const last=realWeights[realWeights.length-1];
+    const lbsLost=first.weight-last.weight;
+    const firstDate=new Date(first.dateKey+'T12:00:00');
+    const lastDate=new Date(last.dateKey+'T12:00:00');
+    const daysBetween=Math.max(1,(lastDate-firstDate)/(1000*60*60*24));
+    const lbsPerWeek=(lbsLost/daysBetween)*7;
+    const lbsToGo=Math.max(0,last.weight-GOAL_WEIGHT);
+    const weeksToGo=lbsPerWeek>0?lbsToGo/lbsPerWeek:null;
+    const projDate=weeksToGo!=null?new Date(lastDate.getTime()+weeksToGo*7*24*60*60*1000):null;
+    const projStr=projDate?projDate.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'Keep logging weights to project';
+    const rateColor=lbsPerWeek>=0.5?'#6ee7b7':lbsPerWeek>0?'#fbbf24':'#f87171';
+    goalContent.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:#22263a;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:${rateColor};">${lbsPerWeek>0?lbsPerWeek.toFixed(2):'0'} lbs</div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:2px;">Per Week (actual)</div>
+        </div>
+        <div style="background:#22263a;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:20px;font-weight:800;color:#6ee7b7;">${lbsToGo.toFixed(1)} lbs</div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:2px;">To Goal</div>
+        </div>
+      </div>
+      <div style="background:#22263a;border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;">Projected Goal Date</div>
+        <div style="font-size:18px;font-weight:800;color:${projDate?'#6ee7b7':'#94a3b8'};">${projStr}</div>
+        ${weeksToGo?`<div style="font-size:11px;color:#94a3b8;margin-top:4px;">About ${Math.ceil(weeksToGo)} weeks from your last weigh-in</div>`:''}
+      </div>`;
+  } else if(goalCard){
+    goalCard.style.display=realWeights.length>=1?'block':'none';
+    if(realWeights.length===1&&goalContent) goalContent.innerHTML='<div style="font-size:12px;color:#94a3b8;text-align:center;padding:8px;">Log at least 2 weigh-ins to see your projected goal date.</div>';
+  }
 
   const dl=document.getElementById('daysLogged');
   if(!S.weekly.length){dl.innerHTML='<div style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No days saved yet. Log food and tap Save Day.</div>';return;}
