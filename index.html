@@ -1618,7 +1618,7 @@ function renderExSleep(){
   // Sleep grid
   const sleepGrid=document.getElementById('sleepWeekGrid');
   if(sleepGrid){
-    const sleepData=allDays.filter(d=>d.sleepHours).map(d=>({date:d.date,hours:d.sleepHours,dateKey:d.dateKey,isToday:false}));
+    const sleepData=allDays.filter(d=>d.sleepHours && d.dateKey!==dk).map(d=>({date:d.date,hours:d.sleepHours,dateKey:d.dateKey,isToday:false}));
     if(S.sleepLogged) sleepData.push({date:'Today',hours:S.sleepHours,dateKey:dk,isToday:true});
     if(sleepData.length){
       const avg=(sleepData.reduce((a,d)=>a+d.hours,0)/sleepData.length).toFixed(1);
