@@ -552,13 +552,13 @@ input, textarea { font-family: inherit; }
 </div>
 
 <script>
-const GOALS={calories:1600,protein:110,sugar:40,carbs:150,fat:55,water:100,deficit:500,satfat:13,fiber:25};
+const GOALS={calories:1600,protein:110,sugar:40,carbs:150,fat:55,water:100,deficit:500,satfat:13,fiber:25,burn:450};
 const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
 const START_WEIGHT=203,GOAL_WEIGHT=193;
-const TABS=['Daily Log','Menu Guide','Snack Time','Exercise/Sleep','Progress'];
-const TAB_IDS=['daily','menu','myday','exsleep','progress'];
+const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
+const TAB_IDS=['daily','menu','myday','progress'];
 const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes',need_protein:'Need Protein',need_fiber:'Need Fiber'};
 
 const DEFAULT_MENU={
@@ -934,24 +934,37 @@ function renderProgress(){
 
   const dl=document.getElementById('daysLogged');
   if(!S.weekly.length){dl.innerHTML='<div style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No days saved yet. Log food and tap Save Day.</div>';return;}
+  const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard',carwash:'Car Wash'};
   dl.innerHTML=[...S.weekly].reverse().map(day=>{
     const calOk=(day.net||day.calories)<=GOALS.calories;
     const protOk=day.protein>=GOALS.protein*0.9;
     const defOk=(day.deficit||0)>=GOALS.deficit;
+    const burnOk=(day.burned||0)>=GOALS.burn;
     const score=[calOk,protOk,defOk].filter(Boolean).length;
     const color=score===3?'#6ee7b7':score===2?'#fbbf24':'#f87171';
     const label=score===3?'Great Day':score===2?'Almost':'Missed';
     const bg=score===3?'rgba(110,231,183,0.08)':score===2?'rgba(251,191,36,0.08)':'rgba(248,113,113,0.08)';
     const border=score===3?'rgba(110,231,183,0.25)':score===2?'rgba(251,191,36,0.25)':'rgba(248,113,113,0.25)';
+    const exList=day.exercises&&day.exercises.length?day.exercises.map(e=>`${exNames[e.type]||e.type} ${e.minutes||0}min${e.notes?' ('+e.notes+')':''}`).join(' · '):'No exercise logged';
+    const burnColor=burnOk?'#6ee7b7':'#f87171';
+    const sleepLine=day.sleepHours?`<div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sleep: ${day.sleepHours}h</div>`:'';
     return`<div style="background:${bg};border:1px solid ${border};border-radius:14px;padding:14px 16px;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div><div style="font-size:14px;font-weight:700;">${day.date}</div><div style="font-size:11px;color:#94a3b8;margin-top:2px;">${day.count} foods${day.exercises&&day.exercises.length?' - '+day.exercises.map(e=>e.type).join(', '):''}</div></div>
+        <div>
+          <div style="font-size:14px;font-weight:700;">${day.date}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${day.count} foods logged</div>
+          ${sleepLine}
+        </div>
         <div style="background:${color};color:#0f1117;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;white-space:nowrap;">${label}</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${calOk?'#6ee7b7':'#f87171'};">${fmt(day.net||day.calories)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NET CAL ${calOk?'ok':'over'}</div></div>
-        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${protOk?'#6ee7b7':'#fbbf24'};">${fmt(day.protein)}g</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">PROTEIN ${protOk?'ok':'low'}</div></div>
-        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${defOk?'#6ee7b7':'#fbbf24'};">${fmt(day.deficit||0)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">DEFICIT ${defOk?'ok':'low'}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${calOk?'#6ee7b7':'#f87171'};">${fmt(day.net||day.calories)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NET CAL ${calOk?'✓':'over'}</div></div>
+        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${protOk?'#6ee7b7':'#fbbf24'};">${fmt(day.protein)}g</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">PROTEIN ${protOk?'✓':'low'}</div></div>
+        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${burnColor};">${fmt(day.burned||0)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">BURNED ${burnOk?'✓':'< 450'}</div></div>
+      </div>
+      <div style="background:#1a1d27;border-radius:10px;padding:10px;">
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Activity</div>
+        <div style="font-size:12px;color:${day.exercises&&day.exercises.length?'#e2e8f0':'#94a3b8'};">${exList}</div>
       </div>
     </div>`;
   }).join('');
