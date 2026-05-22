@@ -1563,15 +1563,26 @@ function renderExSleep(){
     allDays.push({dateKey:dk,date:new Date().toLocaleDateString('en-US',{weekday:'short'}),exercises:S.exercises,sleepHours:S.sleepLogged?S.sleepHours:null});
   }
 
-  // Exercise completion stats
+  // Exercise completion stats — count from saved week logs + today's current exercises
   const exNames={walk:'Dog Walk',bike:'Bike Ride',weights:'Weight Training',yard:'Yard Work',carwash:'Car Wash'};
   const counts={walk:0,bike:0,weights:0};
-  allDays.forEach(d=>{
+
+  // Count from saved weekly logs (exclude today if already saved, we'll add current separately)
+  weekLogs.forEach(d=>{
+    if(d.dateKey===dk) return; // skip today's saved log, use live data instead
     (d.exercises||[]).forEach(ex=>{
       if(counts[ex.type]!==undefined) counts[ex.type]++;
     });
   });
-  if(S.exercises.length>0) S.exercises.forEach(ex=>{ if(counts[ex.type]!==undefined) counts[ex.type]++; });
+
+  // Add today's current exercises (live, not yet saved)
+  S.exercises.forEach(ex=>{ if(counts[ex.type]!==undefined) counts[ex.type]++; });
+
+  // If today was already saved to weekly and has exercises, use that
+  const todaySaved=weekLogs.find(d=>d.dateKey===dk);
+  if(todaySaved && S.exercises.length===0){
+    (todaySaved.exercises||[]).forEach(ex=>{ if(counts[ex.type]!==undefined) counts[ex.type]++; });
+  }
 
   const statsEl=document.getElementById('exCompletionStats');
   if(statsEl){
@@ -1607,13 +1618,20 @@ function renderExSleep(){
   // Sleep grid
   const sleepGrid=document.getElementById('sleepWeekGrid');
   if(sleepGrid){
-    const sleepData=allDays.filter(d=>d.sleepHours).map(d=>({date:d.date,hours:d.sleepHours}));
-    if(S.sleepLogged) sleepData.push({date:'Today',hours:S.sleepHours});
+    const sleepData=allDays.filter(d=>d.sleepHours).map(d=>({date:d.date,hours:d.sleepHours,dateKey:d.dateKey,isToday:false}));
+    if(S.sleepLogged) sleepData.push({date:'Today',hours:S.sleepHours,dateKey:dk,isToday:true});
     if(sleepData.length){
       const avg=(sleepData.reduce((a,d)=>a+d.hours,0)/sleepData.length).toFixed(1);
       sleepGrid.innerHTML=sleepData.map(d=>{
         const color=d.hours>=7?'#6ee7b7':d.hours>=6?'#fbbf24':'#f87171';
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#22263a;border-radius:8px;"><span style="font-size:13px;color:#94a3b8;">${d.date}</span><span style="font-size:14px;font-weight:700;color:${color};">${d.hours}h</span></div>`;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#22263a;border-radius:8px;">
+          <span style="font-size:13px;color:#94a3b8;">${d.date}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:14px;font-weight:700;color:${color};">${d.hours}h</span>
+            <button onclick="editSleepEntry('${d.dateKey}',${d.hours},${d.isToday})" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;cursor:pointer;font-size:11px;padding:3px 8px;">edit</button>
+            <button onclick="deleteSleepEntry('${d.dateKey}',${d.isToday})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:16px;">x</button>
+          </div>
+        </div>`;
       }).join('');
       const avgEl=document.getElementById('sleepWeekAvg');
       if(avgEl){
@@ -1624,6 +1642,37 @@ function renderExSleep(){
       sleepGrid.innerHTML='<div style="font-size:12px;color:#94a3b8;text-align:center;padding:12px;">No sleep logged yet. Use the Daily Log to track.</div>';
     }
   }
+}
+
+function editSleepEntry(dateKey, currentHours, isToday){
+  const newHours=parseFloat(prompt('Edit sleep hours:', currentHours));
+  if(!newHours||newHours<1||newHours>12) return;
+  if(isToday){
+    S.sleepHours=newHours;
+    S.sleepLogged=true;
+    persist();
+  } else {
+    const day=S.weekly.find(d=>d.dateKey===dateKey);
+    if(day) day.sleepHours=newHours;
+    persist();
+  }
+  renderExSleep();
+  showToast('Sleep updated!');
+}
+
+function deleteSleepEntry(dateKey, isToday){
+  if(!confirm('Delete this sleep entry?')) return;
+  if(isToday){
+    S.sleepHours=7;
+    S.sleepLogged=false;
+    persist();
+  } else {
+    const day=S.weekly.find(d=>d.dateKey===dateKey);
+    if(day) day.sleepHours=null;
+    persist();
+  }
+  renderExSleep();
+  showToast('Entry deleted.');
 }
 
 function toggleBloodwork(){
