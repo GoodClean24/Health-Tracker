@@ -1548,16 +1548,18 @@ function logSleep(){
 function renderExSleep(){
   const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const now=new Date();
-  const dow=now.getDay();
-  const startOfWeek=new Date(now);
-  startOfWeek.setDate(now.getDate()-(dow===0?6:dow-1));
 
-  // Build week's exercise data from weekly log — look back 7 days
-  const sevenDaysAgo=new Date(now);
-  sevenDaysAgo.setDate(now.getDate()-6);
+  // Correct Monday-based start of week
+  const dow=now.getDay(); // 0=Sun, 1=Mon...6=Sat
+  const daysFromMon=dow===0?6:dow-1;
+  const startOfWeek=new Date(now);
+  startOfWeek.setDate(now.getDate()-daysFromMon);
+  startOfWeek.setHours(0,0,0,0);
+
+  // Build week's exercise data — only this calendar week (Mon-Sun)
   const weekLogs=S.weekly.filter(d=>{
     const dd=new Date(d.dateKey+'T12:00:00');
-    return dd>=startOfWeek||dd>=sevenDaysAgo;
+    return dd>=startOfWeek;
   });
 
   // Today's exercises count too
