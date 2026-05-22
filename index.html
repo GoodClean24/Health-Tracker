@@ -484,7 +484,7 @@ input, textarea { font-family: inherit; }
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;" id="weightStats"></div>
     <div style="margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:#94a3b8;">Progress to 193 lbs</span><span id="progressPct" style="font-size:12px;font-weight:700;color:#6ee7b7;">0%</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;color:#94a3b8;">Goal: <span id="goalWeightLabel">193</span> lbs</span><button onclick="editGoalWeight()" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;padding:2px 8px;">edit</button></div><span id="progressPct" style="font-size:12px;font-weight:700;color:#6ee7b7;">0%</span></div>
       <div style="background:#2d3748;border-radius:6px;height:10px;overflow:hidden;"><div id="weightProgressBar" style="width:0%;background:linear-gradient(90deg,#fbbf24,#6ee7b7);height:100%;border-radius:6px;transition:width 0.4s;"></div></div>
     </div>
     <div id="weightHistory"></div>
@@ -556,7 +556,7 @@ const GOALS={calories:1600,protein:110,sugar:40,carbs:150,fat:55,water:100,defic
 const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
-const START_WEIGHT=203,GOAL_WEIGHT=193;
+const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
 const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes',need_protein:'Need Protein',need_fiber:'Need Fiber'};
@@ -907,6 +907,7 @@ function renderProgress(){
   const cw=nonStart.length>0?nonStart[nonStart.length-1].weight:START_WEIGHT;
   const lost=Math.max(0,START_WEIGHT-cw),toGo=Math.max(0,cw-GOAL_WEIGHT);
   const pct=Math.min((lost/(START_WEIGHT-GOAL_WEIGHT))*100,100);
+  document.getElementById('goalWeightLabel').textContent=GOAL_WEIGHT;
   document.getElementById('progressPct').textContent=pct.toFixed(0)+'%';
   document.getElementById('weightProgressBar').style.width=pct+'%';
   document.getElementById('weightStats').innerHTML=[{l:'Starting Weight',v:START_WEIGHT+' lbs',c:'#94a3b8'},{l:'Current Weight',v:cw+' lbs',c:'#6ee7b7'},{l:'Lost So Far',v:lost.toFixed(1)+' lbs',c:lost>0?'#6ee7b7':'#94a3b8'},{l:'Lbs to Goal',v:toGo.toFixed(1)+' lbs',c:'#fbbf24'}].map(s=>`<div style="background:#22263a;border-radius:12px;padding:14px;"><div style="font-size:18px;font-weight:800;color:${s.c};">${s.v}</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">${s.l}</div></div>`).join('');
@@ -934,8 +935,39 @@ function renderProgress(){
 
   const dl=document.getElementById('daysLogged');
   if(!S.weekly.length){dl.innerHTML='<div style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No days saved yet. Log food and tap Save Day.</div>';return;}
-  const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard',carwash:'Car Wash'};
-  dl.innerHTML=[...S.weekly].reverse().map(day=>{
+  const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard Work',carwash:'Car Wash'};
+  const exIcons={walk:'🐕',bike:'🚴',weights:'💪',yard:'🌿',carwash:'🚗'};
+
+  // Build lifetime activity summary
+  const actSummary={};
+  S.weekly.forEach(day=>{
+    (day.exercises||[]).forEach(ex=>{
+      if(!actSummary[ex.type]) actSummary[ex.type]={count:0,burned:0};
+      actSummary[ex.type].count++;
+      actSummary[ex.type].burned+=ex.burned||0;
+    });
+  });
+  const totalBurnedAll=Object.values(actSummary).reduce((a,v)=>a+v.burned,0);
+  const legendHtml=Object.keys(actSummary).length?`
+    <div style="background:#1a1d27;border:1px solid #2d3748;border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#6ee7b7;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Activity Summary</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+        ${Object.entries(actSummary).map(([type,data])=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:#e2e8f0;">${exIcons[type]||''} ${exNames[type]||type}</span>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="font-size:12px;color:#94a3b8;">${data.count}x</span>
+              <span style="font-size:12px;font-weight:700;color:#6ee7b7;">${fmt(data.burned)} cal</span>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="border-top:1px solid #2d3748;padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;font-weight:700;color:#e2e8f0;">Total Burned</span>
+        <span style="font-size:15px;font-weight:800;color:#6ee7b7;">${fmt(totalBurnedAll)} cal</span>
+      </div>
+    </div>`:'';
+
+  dl.innerHTML=legendHtml+[...S.weekly].reverse().map(day=>{
     const calOk=(day.net||day.calories)<=GOALS.calories;
     const protOk=day.protein>=GOALS.protein*0.9;
     const defOk=(day.deficit||0)>=GOALS.deficit;
@@ -1324,6 +1356,16 @@ function deleteWeight(i){
   if(!confirm('Delete this weight entry?')) return;
   S.weights.splice(i,1);
   persist();renderAll();showToast('Entry deleted.');
+}
+
+function editGoalWeight(){
+  const current=GOAL_WEIGHT;
+  const val=parseFloat(prompt('Enter your goal weight (lbs):',current));
+  if(!val||val<100||val>300) return;
+  GOAL_WEIGHT=val;
+  localStorage.setItem('kim_tracker_goalweight',val);
+  renderAll();
+  showToast('Goal updated to '+val+' lbs!');
 }
 
 function toggleWeightInput(){
