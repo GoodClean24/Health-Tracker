@@ -316,9 +316,9 @@ input, textarea { font-family: inherit; }
 
     <!-- Green Zone -->
     <div style="border-left:3px solid #22c55e;padding:10px 14px;margin-bottom:14px;background:rgba(34,197,94,0.07);border-radius:0 10px 10px 0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-green')"><div style="font-weight:700;font-size:13px;color:#22c55e;">7:30am – 12pm · Green zone</div><div id="zone-green-arrow" style="color:#22c55e;font-size:18px;font-weight:700;">−</div></div>
-      <div id="zone-green-sub" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Anything within your macros. Insulin sensitivity is highest in the morning.</div>
-      <div id="zone-green-list" style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-green')"><div style="font-weight:700;font-size:13px;color:#22c55e;">7:30am – 12pm · Green zone</div><div id="zone-green-arrow" style="color:#22c55e;font-size:18px;font-weight:700;">+</div></div>
+      <div id="zone-green-sub" style="display:none;" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Anything within your macros. Insulin sensitivity is highest in the morning.</div>
+      <div id="zone-green-list" style="display:none;flex-direction:column;gap:6px;">
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Greek yogurt with berries</div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Apple or pear with almond butter</div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Handful of almonds</div>
@@ -342,9 +342,9 @@ input, textarea { font-family: inherit; }
 
     <!-- Yellow Zone -->
     <div style="border-left:3px solid #eab308;padding:10px 14px;margin-bottom:14px;background:rgba(234,179,8,0.07);border-radius:0 10px 10px 0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-yellow')"><div style="font-weight:700;font-size:13px;color:#eab308;">12pm – 5pm · Moderate zone</div><div id="zone-yellow-arrow" style="color:#eab308;font-size:18px;font-weight:700;">−</div></div>
-      <div id="zone-yellow-sub" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Still okay for treats but keep them before 3pm. Insulin sensitivity starting to drop.</div>
-      <div id="zone-yellow-list" style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-yellow')"><div style="font-weight:700;font-size:13px;color:#eab308;">12pm – 5pm · Moderate zone</div><div id="zone-yellow-arrow" style="color:#eab308;font-size:18px;font-weight:700;">+</div></div>
+      <div id="zone-yellow-sub" style="display:none;" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Still okay for treats but keep them before 3pm. Insulin sensitivity starting to drop.</div>
+      <div id="zone-yellow-list" style="display:none;flex-direction:column;gap:6px;">
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Roasted chickpeas</div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Edamame</div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Apple or pear</div>
@@ -363,9 +363,9 @@ input, textarea { font-family: inherit; }
 
     <!-- Orange Zone -->
     <div style="border-left:3px solid #f97316;padding:10px 14px;margin-bottom:14px;background:rgba(249,115,22,0.07);border-radius:0 10px 10px 0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-orange')"><div style="font-weight:700;font-size:13px;color:#f97316;">5pm – 8pm · Protein & fiber only</div><div id="zone-orange-arrow" style="color:#f97316;font-size:18px;font-weight:700;">−</div></div>
-      <div id="zone-orange-sub" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">No sugar, no simple carbs. Stick to protein and fiber to support overnight recovery.</div>
-      <div id="zone-orange-list" style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-orange')"><div style="font-weight:700;font-size:13px;color:#f97316;">5pm – 8pm · Protein & fiber only</div><div id="zone-orange-arrow" style="color:#f97316;font-size:18px;font-weight:700;">+</div></div>
+      <div id="zone-orange-sub" style="display:none;" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">No sugar, no simple carbs. Stick to protein and fiber to support overnight recovery.</div>
+      <div id="zone-orange-list" style="display:none;flex-direction:column;gap:6px;">
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Plain Greek yogurt (no added sugar)</div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Handful of almonds</div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;">Celery with almond butter</div>
@@ -380,9 +380,9 @@ input, textarea { font-family: inherit; }
 
     <!-- Red Zone -->
     <div style="border-left:3px solid #ef4444;padding:10px 14px;margin-bottom:14px;background:rgba(239,68,68,0.07);border-radius:0 10px 10px 0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-red')"><div style="font-weight:700;font-size:13px;color:#ef4444;">8pm – 12am · Danger zone</div><div id="zone-red-arrow" style="color:#ef4444;font-size:18px;font-weight:700;">−</div></div>
-      <div id="zone-red-sub" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">If you must eat, approved list only. Anything else stores as fat and spikes morning glucose.</div>
-      <div id="zone-red-list" style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-red')"><div style="font-weight:700;font-size:13px;color:#ef4444;">8pm – 12am · Danger zone</div><div id="zone-red-arrow" style="color:#ef4444;font-size:18px;font-weight:700;">+</div></div>
+      <div id="zone-red-sub" style="display:none;" style="font-size:11px;color:#94a3b8;margin-bottom:10px;">If you must eat, approved list only. Anything else stores as fat and spikes morning glucose.</div>
+      <div id="zone-red-list" style="display:none;flex-direction:column;gap:6px;">
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;display:flex;justify-content:space-between;"><span>Plain Greek yogurt</span><span style="color:#22c55e;font-size:11px;">approved</span></div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;display:flex;justify-content:space-between;"><span>Small handful of almonds</span><span style="color:#22c55e;font-size:11px;">approved</span></div>
         <div style="background:#22263a;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;display:flex;justify-content:space-between;"><span>Cottage cheese</span><span style="color:#22c55e;font-size:11px;">approved</span></div>
@@ -559,7 +559,7 @@ const ACTIVITY_DAYS=['Saturday','Sunday'];
 const START_WEIGHT=203,GOAL_WEIGHT=193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Exercise/Sleep','Progress'];
 const TAB_IDS=['daily','menu','myday','exsleep','progress'];
-const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes'};
+const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes',need_protein:'Need Protein',need_fiber:'Need Fiber'};
 
 const DEFAULT_MENU={
   breakfasts:[
@@ -604,6 +604,30 @@ const DEFAULT_MENU={
   ],
   shakes:[
     {id:'sh1',name:"Kim's Chocolate Shake",items:'1 scoop Designer Whey Chocolate, 1 tbsp PB2, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:255,protein:32,sugar:9,carbs:22,fat:5,satfat:0,fiber:3,notes:'After your walk.',useCount:0},
+  ],
+  need_protein:[
+    {id:'np1',name:'Grilled Chicken Breast (4oz)',items:'4oz grilled chicken breast',calories:185,protein:35,sugar:0,carbs:0,fat:4,satfat:1,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np2',name:'Fairlife Chocolate Milk (1 cup)',items:'1 cup Fairlife chocolate milk',calories:140,protein:13,sugar:12,carbs:20,fat:2,satfat:1,fiber:0,timeZone:'green,yellow',useCount:0},
+    {id:'np3',name:'Plain Greek Yogurt (1/2 cup)',items:'1/2 cup plain nonfat Greek yogurt',calories:70,protein:12,sugar:4,carbs:5,fat:0,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np4',name:'Cottage Cheese (1/2 cup)',items:'1/2 cup low-fat cottage cheese',calories:90,protein:12,sugar:3,carbs:5,fat:1,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np5',name:'Hard Boiled Eggs (2)',items:'2 hard boiled eggs',calories:140,protein:12,sugar:0,carbs:1,fat:10,satfat:3,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np6',name:"Kim's Protein Shake",items:'Full shake recipe',calories:255,protein:32,sugar:9,carbs:22,fat:5,satfat:0,fiber:3,timeZone:'green',useCount:0},
+    {id:'np7',name:'Canned Tuna (3oz)',items:'3oz canned tuna in water',calories:100,protein:22,sugar:0,carbs:0,fat:1,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np8',name:'Edamame (1/2 cup)',items:'1/2 cup shelled edamame',calories:95,protein:9,sugar:1,carbs:8,fat:4,satfat:0,fiber:4,timeZone:'green,yellow,orange',useCount:0},
+    {id:'np9',name:'String Cheese (1)',items:'1 string cheese',calories:80,protein:7,sugar:0,carbs:1,fat:5,satfat:3,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np10',name:'Salmon (4oz)',items:'4oz baked or grilled salmon',calories:235,protein:31,sugar:0,carbs:0,fat:12,satfat:2,fiber:0,timeZone:'green,yellow,orange',useCount:0},
+  ],
+  need_fiber:[
+    {id:'nf1',name:'Lentil Soup (1 cup)',items:'1 cup lentil soup',calories:230,protein:18,sugar:4,carbs:40,fat:1,satfat:0,fiber:16,timeZone:'green,yellow,orange',useCount:0},
+    {id:'nf2',name:'Black Beans (1/2 cup)',items:'1/2 cup canned black beans',calories:110,protein:8,sugar:0,carbs:20,fat:0,satfat:0,fiber:8,timeZone:'green,yellow,orange',useCount:0},
+    {id:'nf3',name:'Chickpeas Roasted (1/2 cup)',items:'1/2 cup roasted chickpeas',calories:130,protein:7,sugar:1,carbs:20,fat:3,satfat:0,fiber:6,timeZone:'green,yellow,orange',useCount:0},
+    {id:'nf4',name:'Pear (1 medium)',items:'1 medium pear',calories:100,protein:1,sugar:16,carbs:27,fat:0,satfat:0,fiber:6,timeZone:'green,yellow',useCount:0},
+    {id:'nf5',name:'Avocado (half)',items:'half avocado',calories:120,protein:2,sugar:0,carbs:6,fat:11,satfat:2,fiber:5,timeZone:'green,yellow,orange',useCount:0},
+    {id:'nf6',name:'Edamame (1/2 cup)',items:'1/2 cup shelled edamame',calories:95,protein:9,sugar:1,carbs:8,fat:4,satfat:0,fiber:4,timeZone:'green,yellow,orange',useCount:0},
+    {id:'nf7',name:'Apple (1 medium)',items:'1 medium apple',calories:95,protein:0,sugar:19,carbs:25,fat:0,satfat:0,fiber:4,timeZone:'green,yellow',useCount:0},
+    {id:'nf8',name:'Air Popped Popcorn (2 cups)',items:'2 cups air popped popcorn',calories:60,protein:2,sugar:0,carbs:12,fat:1,satfat:0,fiber:4,timeZone:'green,yellow',useCount:0},
+    {id:'nf9',name:'Almonds (small handful)',items:'small handful almonds',calories:160,protein:6,sugar:1,carbs:6,fat:14,satfat:1,fiber:4,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'nf10',name:'Steamed Broccoli (1 cup)',items:'1 cup steamed broccoli',calories:55,protein:4,sugar:2,carbs:11,fat:0,satfat:0,fiber:5,timeZone:'green,yellow,orange,red',useCount:0},
   ]
 };
 
@@ -955,8 +979,82 @@ function renderSavedMeals(){
   </div>`).join('');
 }
 
+function getCurrentZone(){
+  const h=new Date().getHours()+(new Date().getMinutes()/60);
+  if(h<12) return 'green';
+  if(h<17) return 'yellow';
+  if(h<20) return 'orange';
+  return 'red';
+}
+
 function renderMenuGuide(){
-  document.getElementById('menuSectionPills').innerHTML=Object.keys(SECTION_LABELS).map(sec=>`<button onclick="setMenuSection('${sec}')" style="border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid ${S.menuSection===sec?'#6ee7b7':'#2d3748'};background:${S.menuSection===sec?'#6ee7b7':'#1a1d27'};color:${S.menuSection===sec?'#0f1117':'#94a3b8'};">${SECTION_LABELS[sec]}</button>`).join('');
+  // Separate pills: regular sections vs boost sections
+  const regularSecs=['breakfasts','snacks','lunches','dinners','shakes'];
+  const boostSecs=['need_protein','need_fiber'];
+  const t=totals();
+  const needPro=t.protein<GOALS.protein;
+  const needFib=t.fiber<GOALS.fiber;
+  const pillsHtml=regularSecs.map(sec=>`<button onclick="setMenuSection('${sec}')" style="border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid ${S.menuSection===sec?'#6ee7b7':'#2d3748'};background:${S.menuSection===sec?'#6ee7b7':'#1a1d27'};color:${S.menuSection===sec?'#0f1117':'#94a3b8'};">${SECTION_LABELS[sec]}</button>`).join('')+
+    boostSecs.map(sec=>{
+      const isNeed=sec==='need_protein'?needPro:needFib;
+      const active=S.menuSection===sec;
+      return `<button onclick="setMenuSection('${sec}')" style="border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${active?'#f97316':isNeed?'rgba(249,115,22,0.5)':'#2d3748'};background:${active?'#f97316':'#1a1d27'};color:${active?'#fff':isNeed?'#f97316':'#94a3b8'};">${SECTION_LABELS[sec]}${isNeed?' ⚠':''}${!active&&isNeed?'':''}</button>`;
+    }).join('');
+  document.getElementById('menuSectionPills').innerHTML=pillsHtml;
+
+  // Boost sections get special rendering
+  if(S.menuSection==='need_protein'||S.menuSection==='need_fiber'){
+    const isProtein=S.menuSection==='need_protein';
+    const zone=getCurrentZone();
+    const zoneOrder={green:0,yellow:1,orange:2,red:3};
+    const zoneNames={green:'Morning',yellow:'Afternoon',orange:'Evening',red:'Late Night'};
+    const zoneColors={green:'#22c55e',yellow:'#eab308',orange:'#f97316',red:'#ef4444'};
+    const allItems=[...(S.menu[S.menuSection]||[])];
+    // Also pull from other sections with high protein/fiber
+    Object.keys(S.menu).forEach(sec=>{
+      if(['need_protein','need_fiber'].includes(sec)) return;
+      (S.menu[sec]||[]).forEach(item=>{
+        const val=isProtein?(item.protein||0):(item.fiber||0);
+        const threshold=isProtein?15:4;
+        if(val>=threshold && !allItems.find(x=>x.name===item.name)){
+          allItems.push({...item,timeZone:'green,yellow,orange,red',_fromMenu:true});
+        }
+      });
+    });
+    // Sort: current zone first, then by protein/fiber desc
+    const sorted=allItems.sort((a,b)=>{
+      const aZones=(a.timeZone||'green').split(',');
+      const bZones=(b.timeZone||'green').split(',');
+      const aHas=aZones.includes(zone)?0:1;
+      const bHas=bZones.includes(zone)?0:1;
+      if(aHas!==bHas) return aHas-bHas;
+      return isProtein?((b.protein||0)-(a.protein||0)):((b.fiber||0)-(a.fiber||0));
+    });
+    const remaining=isProtein?Math.max(0,GOALS.protein-t.protein):Math.max(0,GOALS.fiber-t.fiber);
+    document.getElementById('menuItems').innerHTML=`<div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#f97316;">You need <strong>${remaining}${isProtein?'g protein':'g fiber'}</strong> more today. Foods available now (${zoneNames[zone]} zone) shown first.</div>`+
+    sorted.map((item,idx)=>{
+      const zones=(item.timeZone||'green,yellow,orange,red').split(',');
+      const inZone=zones.includes(zone);
+      const val=isProtein?(item.protein||0):(item.fiber||0);
+      const zoneColor=zoneColors[zone];
+      return `<div style="background:#1a1d27;border-radius:14px;padding:14px;margin-bottom:8px;border:1px solid ${inZone?'rgba(110,231,183,0.2)':'#2d3748'};opacity:${inZone?1:0.5};">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:13px;color:${inZone?'#e2e8f0':'#94a3b8'};">${item.name}</div>
+            ${item.items?`<div style="font-size:11px;color:#94a3b8;margin-top:1px;">${item.items}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+            <span style="font-size:14px;font-weight:800;color:${inZone?'#6ee7b7':'#94a3b8'};">${val}g ${isProtein?'protein':'fiber'}</span>
+            <span style="font-size:10px;color:${inZone?zoneColor:'#94a3b8'};font-weight:600;">${inZone?'✓ OK now':'Best '+zones[0]}</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:8px;">${item.calories} cal · ${item.protein}g pro · ${item.fiber||0}g fiber</div>
+        ${!item._fromMenu?`<div style="display:flex;justify-content:flex-end;gap:6px;"><button onclick="editMenuItem('${S.menuSection}',${idx})" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;cursor:pointer;font-size:11px;padding:3px 8px;">edit</button><button onclick="deleteMenuItem('${S.menuSection}',${idx})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;">delete</button></div>`:''}
+      </div>`;
+    }).join('');
+    return;
+  }
+
   const list=[...(S.menu[S.menuSection]||[])].sort((a,b)=>(b.useCount||0)-(a.useCount||0));
   document.getElementById('menuItems').innerHTML=list.map((item,idx)=>`<div style="background:#1a1d27;border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid #2d3748;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
