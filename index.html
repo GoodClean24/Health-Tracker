@@ -1463,7 +1463,7 @@ function logWeight(){
 function saveDay(){
   if(!S.entries.length)return;
   const t=totals();
-  const today=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const today=new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
   const existing=S.weekly.findIndex(d=>d.dateKey===dk);
   const t2=totals();const dayData={date:today,dateKey:dk,...t2,net:netCals(),steps:parseInt(S.steps)||0,burned:totalBurned(),count:S.entries.length,exercises:[...S.exercises],waterOz:S.waterCups*20,deficit:totalDeficit(),sleepHours:S.sleepLogged?S.sleepHours:null,satfat:t2.satfat||0,fiber:t2.fiber||0};
   if(existing>=0)S.weekly[existing]=dayData;else S.weekly.push(dayData);
@@ -1824,13 +1824,18 @@ function saveEditDay(){
   if(!newDateVal){showToast('Pick a date',true);return;}
   const d=new Date(newDateVal+'T12:00:00');
   const newDateKey=newDateVal;
-  const newDateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  // Check for duplicate — another entry with same new date
-  const exists=S.weekly.find(w=>w.dateKey===newDateKey&&w.dateKey!==origDateKey);
-  if(exists){showToast('Conflict: '+exists.date+' ('+exists.dateKey+')',true);return;}
-  const entry=S.weekly.find(w=>w.dateKey===origDateKey);
+  const newDateLabel=d.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+  // Normalize dateKey helper
+  const normDK=k=>{ if(!k) return k; const p=k.split('-'); return p[0]+'-'+p[1].padStart(2,'0')+'-'+p[2].padStart(2,'0'); };
+  const normNew=normDK(newDateKey);
+  const normOrig=normDK(origDateKey);
+  // Normalize all existing dateKeys
+  S.weekly.forEach(w=>{ if(w.dateKey) w.dateKey=normDK(w.dateKey); });
+  const exists=S.weekly.find(w=>w.dateKey===normNew&&w.dateKey!==normOrig);
+  if(exists){showToast('A day with that date already exists.',true);return;}
+  const entry=S.weekly.find(w=>w.dateKey===normOrig||w.dateKey===origDateKey);
   if(!entry){showToast('Could not find that day.',true);return;}
-  entry.dateKey=newDateKey;
+  entry.dateKey=normNew;
   entry.date=newDateLabel;
   S.weekly.sort((a,b)=>a.dateKey>b.dateKey?1:-1);
   persist();
