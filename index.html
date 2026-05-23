@@ -26,6 +26,24 @@ input, textarea { font-family: inherit; }
 <body>
 <div id="toast" class="toast"></div>
 
+<!-- Edit Day Modal -->
+<div id="editDayModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-weight:700;font-size:16px;">Edit a Saved Day</span>
+      <button onclick="document.getElementById('editDayModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:22px;">x</button>
+    </div>
+    <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:6px;">Select the day to edit:</label>
+    <select id="editDaySelect" class="inp" style="margin-bottom:14px;"></select>
+    <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Change date to:</label>
+    <input class="inp" type="date" id="editDayNewDate" style="margin-bottom:14px;" />
+    <div style="display:flex;gap:8px;">
+      <button class="btn-green" onclick="saveEditDay()" style="flex:1;">Save Changes</button>
+      <button onclick="deleteEditDay()" style="flex:1;background:none;border:1px solid #f87171;border-radius:10px;padding:10px;color:#f87171;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">Delete Day</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
@@ -500,7 +518,10 @@ input, textarea { font-family: inherit; }
     <div id="goalDateContent"></div>
   </div>
   <div class="card">
-    <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Days Logged</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="font-weight:700;font-size:15px;">Days Logged</div>
+      <button onclick="showEditDayModal()" class="btn-ghost" style="font-size:12px;padding:6px 12px;">Edit a Day</button>
+    </div>
     <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Green = all 3 goals hit. Yellow = 2 of 3. Red = missed.</div>
     <div style="display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;">
       <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#6ee7b7;flex-shrink:0;"></div><span style="font-size:11px;color:#94a3b8;">Calories + Protein + Deficit</span></div>
@@ -573,6 +594,7 @@ const DEFAULT_MENU={
     {id:'b2',name:'Two Fried Eggs + Sourdough + Blueberries',items:'2 fried eggs, 1 slice sourdough with thin butter, handful blueberries',calories:380,protein:15,sugar:6,carbs:32,fat:18,satfat:5,fiber:2,useCount:0},
     {id:'b3',name:'Two Fried Eggs + Raisin Toast + Half Grapefruit',items:'2 fried eggs, 1 slice raisin toast with thin butter, half grapefruit',calories:350,protein:14,sugar:14,carbs:34,fat:16,satfat:5,fiber:3,useCount:0},
     {id:'b4',name:'Cottage Cheese Bowl',items:'1/2 cup cottage cheese, canned peaches or pineapple in juice, handful blueberries',calories:200,protein:16,sugar:14,carbs:22,fat:2,satfat:1,fiber:1,notes:'Get fruit packed in juice not syrup.',useCount:0},
+    {id:'b6',name:'Two Fried Eggs + Dark Rye + Half Grapefruit',items:'2 fried eggs, 1 slice Oroweat Schwarzwalder Rye, light butter, half grapefruit',calories:340,protein:15,sugar:8,carbs:28,fat:16,satfat:4,fiber:3,useCount:0},
     {id:'b5',name:'Egg and Fruit Bowl',items:'2 hard boiled eggs, banana or apple, small handful almonds',calories:310,protein:16,sugar:14,carbs:24,fat:16,satfat:3,fiber:4,useCount:0},
   ],
   snacks:[
@@ -1777,6 +1799,56 @@ function deleteSleepEntry(dateKey, isToday){
   }
   renderExSleep();
   showToast('Entry deleted.');
+}
+
+function showEditDayModal(){
+  if(!S.weekly.length){showToast('No saved days yet.',true);return;}
+  const sel=document.getElementById('editDaySelect');
+  sel.innerHTML=[...S.weekly].sort((a,b)=>a.dateKey>b.dateKey?-1:1).map((d,i)=>{
+    const realIdx=S.weekly.findIndex(x=>x.dateKey===d.dateKey);
+    return`<option value="${realIdx}">${d.date} (${d.dateKey})</option>`;
+  }).join('');
+  // Pre-fill date with selected day's dateKey
+  const firstIdx=parseInt(sel.value);
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('editDayNewDate').value=S.weekly[firstIdx]?.dateKey||`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  sel.onchange=()=>{
+    const idx=parseInt(sel.value);
+    document.getElementById('editDayNewDate').value=S.weekly[idx]?.dateKey||'';
+  };
+  document.getElementById('editDayModal').style.display='flex';
+}
+
+function saveEditDay(){
+  const idx=parseInt(document.getElementById('editDaySelect').value);
+  const newDateVal=document.getElementById('editDayNewDate').value;
+  if(!newDateVal){showToast('Pick a date',true);return;}
+  const d=new Date(newDateVal+'T12:00:00');
+  const newDateKey=newDateVal;
+  const newDateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  // Check for duplicate
+  const exists=S.weekly.find((w,i)=>w.dateKey===newDateKey&&i!==idx);
+  if(exists){showToast('A day with that date already exists.',true);return;}
+  S.weekly[idx].dateKey=newDateKey;
+  S.weekly[idx].date=newDateLabel;
+  S.weekly.sort((a,b)=>a.dateKey>b.dateKey?1:-1);
+  persist();
+  document.getElementById('editDayModal').style.display='none';
+  renderAll();
+  showToast('Day updated!');
+}
+
+function deleteEditDay(){
+  const idx=parseInt(document.getElementById('editDaySelect').value);
+  const day=S.weekly[idx];
+  if(!day){return;}
+  if(!confirm(`Delete ${day.date}? This cannot be undone.`)) return;
+  S.weekly.splice(idx,1);
+  persist();
+  document.getElementById('editDayModal').style.display='none';
+  renderAll();
+  showToast('Day deleted.');
 }
 
 function toggleBloodwork(){
