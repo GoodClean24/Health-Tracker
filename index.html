@@ -1827,7 +1827,7 @@ function saveEditDay(){
   const newDateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   // Check for duplicate — another entry with same new date
   const exists=S.weekly.find(w=>w.dateKey===newDateKey&&w.dateKey!==origDateKey);
-  if(exists){showToast('A day with that date already exists.',true);return;}
+  if(exists){showToast('Conflict: '+exists.date+' ('+exists.dateKey+')',true);return;}
   const entry=S.weekly.find(w=>w.dateKey===origDateKey);
   if(!entry){showToast('Could not find that day.',true);return;}
   entry.dateKey=newDateKey;
