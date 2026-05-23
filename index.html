@@ -1804,34 +1804,34 @@ function deleteSleepEntry(dateKey, isToday){
 function showEditDayModal(){
   if(!S.weekly.length){showToast('No saved days yet.',true);return;}
   const sel=document.getElementById('editDaySelect');
-  sel.innerHTML=[...S.weekly].sort((a,b)=>a.dateKey>b.dateKey?-1:1).map((d,i)=>{
-    const realIdx=S.weekly.findIndex(x=>x.dateKey===d.dateKey);
-    return`<option value="${realIdx}">${d.date} (${d.dateKey})</option>`;
+  sel.innerHTML=[...S.weekly].sort((a,b)=>a.dateKey>b.dateKey?-1:1).map(d=>{
+    return`<option value="${d.dateKey}">${d.date} (${d.dateKey})</option>`;
   }).join('');
   // Pre-fill date with selected day's dateKey
-  const firstIdx=parseInt(sel.value);
+  const firstKey=sel.value;
   const now=new Date();
   const pad=n=>String(n).padStart(2,'0');
-  document.getElementById('editDayNewDate').value=S.weekly[firstIdx]?.dateKey||`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  document.getElementById('editDayNewDate').value=firstKey||`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
   sel.onchange=()=>{
-    const idx=parseInt(sel.value);
-    document.getElementById('editDayNewDate').value=S.weekly[idx]?.dateKey||'';
+    document.getElementById('editDayNewDate').value=sel.value||'';
   };
   document.getElementById('editDayModal').style.display='flex';
 }
 
 function saveEditDay(){
-  const idx=parseInt(document.getElementById('editDaySelect').value);
+  const origDateKey=document.getElementById('editDaySelect').value;
   const newDateVal=document.getElementById('editDayNewDate').value;
   if(!newDateVal){showToast('Pick a date',true);return;}
   const d=new Date(newDateVal+'T12:00:00');
   const newDateKey=newDateVal;
   const newDateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  // Check for duplicate
-  const exists=S.weekly.find((w,i)=>w.dateKey===newDateKey&&i!==idx);
+  // Check for duplicate — another entry with same new date
+  const exists=S.weekly.find(w=>w.dateKey===newDateKey&&w.dateKey!==origDateKey);
   if(exists){showToast('A day with that date already exists.',true);return;}
-  S.weekly[idx].dateKey=newDateKey;
-  S.weekly[idx].date=newDateLabel;
+  const entry=S.weekly.find(w=>w.dateKey===origDateKey);
+  if(!entry){showToast('Could not find that day.',true);return;}
+  entry.dateKey=newDateKey;
+  entry.date=newDateLabel;
   S.weekly.sort((a,b)=>a.dateKey>b.dateKey?1:-1);
   persist();
   document.getElementById('editDayModal').style.display='none';
@@ -1840,11 +1840,11 @@ function saveEditDay(){
 }
 
 function deleteEditDay(){
-  const idx=parseInt(document.getElementById('editDaySelect').value);
-  const day=S.weekly[idx];
-  if(!day){return;}
-  if(!confirm(`Delete ${day.date}? This cannot be undone.`)) return;
-  S.weekly.splice(idx,1);
+  const origDateKey=document.getElementById('editDaySelect').value;
+  const entry=S.weekly.find(w=>w.dateKey===origDateKey);
+  if(!entry) return;
+  if(!confirm(`Delete ${entry.date}? This cannot be undone.`)) return;
+  S.weekly=S.weekly.filter(w=>w.dateKey!==origDateKey);
   persist();
   document.getElementById('editDayModal').style.display='none';
   renderAll();
