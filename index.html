@@ -579,6 +579,7 @@ input, textarea { font-family: inherit; }
 
 <script>
 const GOALS={calories:1600,protein:110,sugar:40,carbs:150,fat:55,water:100,deficit:500,satfat:13,fiber:25,burn:450};
+const TDEE=1950;
 const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
@@ -746,8 +747,8 @@ function stepsBurned(){return Math.round((parseInt(S.steps)||0)*0.04);}
 function exBurned(){return S.exercises.reduce((a,ex)=>a+(ex.burned||0),0);}
 function totalBurned(){return stepsBurned()+exBurned();}
 function netCals(){return totals().calories-totalBurned();}
-function caloriesUnderGoal(){return GOALS.calories-totals().calories;}  // purely food vs 1600
-function totalDeficit(){return caloriesUnderGoal()+totalBurned();}     // food savings + exercise bonus
+function caloriesUnderGoal(){return GOALS.calories-totals().calories;}  // food vs 1600 eating goal
+function totalDeficit(){return TDEE-totals().calories+totalBurned();}  // real deficit: TDEE - eaten + burned
 
 let toastTimer;
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.style.background=err?'#f87171':'#6ee7b7';t.style.color='#0f1117';t.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.style.display='none',2500);}
@@ -811,11 +812,11 @@ function renderAll(){
   macroBar('macroBarFiber','Fiber',t.fiber,GOALS.fiber,'g',false);
 
   const cu=caloriesUnderGoal(), td=totalDeficit();
-  const cuColor=cu>=0?'#6ee7b7':'#f87171';
-  document.getElementById('deficitBigNum').textContent=(cu>=0?'+':'')+fmt(cu);
-  document.getElementById('deficitBigNum').style.color=cuColor;
-  document.getElementById('deficitCard').style.borderColor=cu>=0?'rgba(110,231,183,0.4)':'#2d3748';
-  document.getElementById('deficitLabel').textContent=cu>=0?'calories under your 1,600 goal':'calories over your 1,600 goal';
+  const tdColor=td>=500?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
+  document.getElementById('deficitBigNum').textContent=(td>=0?'+':'')+fmt(td);
+  document.getElementById('deficitBigNum').style.color=tdColor;
+  document.getElementById('deficitCard').style.borderColor=td>=500?'rgba(110,231,183,0.4)':'#2d3748';
+  document.getElementById('deficitLabel').textContent='cal deficit today (TDEE 1,950 - eaten + burned)';
   const bpct=Math.min(Math.max((td/500)*100,0),100);
   document.getElementById('deficitBar').style.width=bpct+'%';
   document.getElementById('deficitBar').style.background=td>=500?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
