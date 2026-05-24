@@ -584,6 +584,7 @@ const TDEE=1950;
 const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
+const MENU_VERSION='v2025-05-24';
 const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
@@ -706,11 +707,13 @@ let S={
 };
 
 async function loadPersistent(){
-  // Force reset need_protein and need_fiber to latest snack lists
-  try { const m=JSON.parse(localStorage.getItem('kim_tracker_menu')||'{}'); if(m.need_protein&&m.need_protein[0]&&m.need_protein[0].id==='np1'&&m.need_protein[0].name.includes('Grilled')){ m.need_protein=DEFAULT_MENU.need_protein; m.need_fiber=DEFAULT_MENU.need_fiber; localStorage.setItem('kim_tracker_menu',JSON.stringify(m)); } } catch(e) {}
-  // Force menu reset to pick up latest DEFAULT_MENU
-  localStorage.removeItem('kim_tracker_menu');
-  try { await window.storage.delete('kim_tracker_menu'); } catch(e) {}
+  // Check menu version — reset if outdated
+  const savedMenuVer=localStorage.getItem('kim_tracker_menu_version');
+  if(savedMenuVer!==MENU_VERSION){
+    localStorage.removeItem('kim_tracker_menu');
+    try { await window.storage.delete('kim_tracker_menu'); } catch(e) {}
+    localStorage.setItem('kim_tracker_menu_version',MENU_VERSION);
+  }
   const keys=['kim_tracker_menu','kim_tracker_saved','kim_tracker_weekly','kim_tracker_weights'];
   for(const k of keys){
     try{
