@@ -706,6 +706,19 @@ let S={
   activeTab:'daily',
 };
 
+function seedWeeklyIfEmpty(){
+  if(S.weekly.length>0) return;
+  S.weekly=[
+    {date:'Mon, 05/18/2026',dateKey:'2026-05-18',calories:2675,protein:124,sugar:60,carbs:180,fat:75,satfat:22,fiber:8,net:2675,steps:13676,burned:847,deficit:122,count:6,exercises:[{type:'walk',minutes:60,burned:300,miles:2.8}],waterOz:0,sleepHours:null},
+    {date:'Tue, 05/19/2026',dateKey:'2026-05-19',calories:1565,protein:79,sugar:28,carbs:100,fat:35,satfat:10,fiber:5,net:1565,steps:17353,burned:994,deficit:1379,count:5,exercises:[{type:'walk',minutes:60,burned:300,miles:2.53}],waterOz:0,sleepHours:null},
+    {date:'Wed, 05/20/2026',dateKey:'2026-05-20',calories:1675,protein:88,sugar:30,carbs:105,fat:35,satfat:11,fiber:7,net:1675,steps:12234,burned:945,deficit:1220,count:5,exercises:[{type:'walk',minutes:40,burned:200,miles:1},{type:'bike',minutes:32,burned:256,miles:6}],waterOz:0,sleepHours:null},
+    {date:'Thu, 05/21/2026',dateKey:'2026-05-21',calories:1336,protein:89,sugar:16,carbs:85,fat:28,satfat:6,fiber:8,net:1336,steps:0,burned:888,deficit:1502,count:5,exercises:[{type:'walk',minutes:55,burned:440,miles:8},{type:'bike',minutes:56,burned:448,miles:2.5}],waterOz:0,sleepHours:null},
+    {date:'Fri, 05/23/2026',dateKey:'2026-05-23',calories:1470,protein:103,sugar:25,carbs:93,fat:35,satfat:7,fiber:13,net:1470,steps:0,burned:275,deficit:755,count:5,exercises:[{type:'walk',minutes:55,burned:275,miles:2.5}],waterOz:0,sleepHours:null},
+    {date:'Sat, 05/24/2026',dateKey:'2026-05-24',calories:1580,protein:67,sugar:22,carbs:95,fat:45,satfat:14,fiber:9,net:1580,steps:12000,burned:900,deficit:1270,count:6,exercises:[{type:'carwash',minutes:420,burned:420},{type:'steps',minutes:0,burned:480}],waterOz:0,sleepHours:null},
+  ];
+  persist();
+}
+
 async function loadPersistent(){
   // Check menu version — reset if outdated
   const savedMenuVer=localStorage.getItem('kim_tracker_menu_version');
@@ -2131,7 +2144,7 @@ function importData(e){
 }
 
 initTabs();
-loadPersistent().then(()=>ensureDefaultMeals());
+loadPersistent().then(()=>{ensureDefaultMeals();seedWeeklyIfEmpty();});
 </script>
 </body>
 </html>
