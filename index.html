@@ -1145,7 +1145,7 @@ function renderMenuGuide(){
     const zoneOrder={green:0,yellow:1,orange:2,red:3};
     const zoneNames={green:'Morning',yellow:'Afternoon',orange:'Evening',red:'Late Night'};
     const zoneColors={green:'#22c55e',yellow:'#eab308',orange:'#f97316',red:'#ef4444'};
-    const allItems=[...(S.menu[S.menuSection]||[])];
+    const allItems=[...(DEFAULT_MENU[S.menuSection]||[])];
     // Also pull from other sections with high protein/fiber
     Object.keys(S.menu).forEach(sec=>{
       if(['need_protein','need_fiber'].includes(sec)) return;
