@@ -1024,13 +1024,14 @@ function renderProgress(){
 
   const dl=document.getElementById('daysLogged');
   if(!S.weekly.length){dl.innerHTML='<div style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No days saved yet. Log food and tap Save Day.</div>';return;}
-  const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard Work',carwash:'Car Wash'};
+  const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard Work',carwash:'Car Wash',steps:'Steps'};
   const exIcons={walk:'🐕',bike:'🚴',weights:'💪',yard:'🌿',carwash:'🚗',steps:'👟'};
 
   // Build lifetime activity summary
   const actSummary={};
   S.weekly.forEach(day=>{
     (day.exercises||[]).forEach(ex=>{
+      if(ex.type==='steps') return;
       if(!actSummary[ex.type]) actSummary[ex.type]={count:0,burned:0};
       actSummary[ex.type].count++;
       actSummary[ex.type].burned+=ex.burned||0;
@@ -1757,7 +1758,7 @@ function renderExSleep(){
   // Week grid - today's exercises
   const exGrid=document.getElementById('exWeekGrid');
   if(exGrid && S.exercises.length>0){
-    const names={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard',carwash:'Car Wash'};
+    const names={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard Work',carwash:'Car Wash',steps:'Steps'};
     exGrid.innerHTML='<div style="font-size:11px;color:#94a3b8;margin-bottom:8px;">Today\'s logged activity:</div>'+
       S.exercises.map(ex=>`<div style="background:#22263a;border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;justify-content:space-between;"><span style="font-size:13px;color:#e2e8f0;">${names[ex.type]||ex.type}${ex.notes?' — '+ex.notes:''}</span><span style="font-size:12px;color:#6ee7b7;">${ex.minutes||0} min · ${ex.burned} kcal</span></div>`).join('');
   } else if(exGrid){
