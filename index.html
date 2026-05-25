@@ -604,7 +604,7 @@ const TDEE=1950;
 const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
-const MENU_VERSION='v2026-05-25';
+const MENU_VERSION='v2026-05-25d';
 const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
@@ -613,7 +613,7 @@ const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',din
 const DEFAULT_MENU={
   breakfasts:[
     {id:'b0',name:"Kim's Morning Coffee",items:'12oz Peets decaf coffee, 1oz Torani vanilla syrup, 4oz Fairlife fat free milk',calories:75,protein:4,sugar:11,carbs:13,fat:0,satfat:0,fiber:0,useCount:0},
-    {id:'b1',name:"Kim's Chocolate Protein Shake",items:'1 scoop Designer Whey Chocolate, 1 tbsp PB2, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:255,protein:32,sugar:9,carbs:22,fat:5,satfat:0,fiber:3,notes:'Have AFTER your walk.',useCount:0},
+    {id:'b1',name:"Kim's Chocolate Protein Shake",items:'1.5 scoops Designer Whey Chocolate, 1 tbsp PB2, 2 tbsp plain Greek yogurt, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:325,protein:41,sugar:14,carbs:31,fat:5,satfat:1,fiber:9,notes:'Have AFTER your walk.',useCount:0},
     {id:'b2',name:'Two Fried Eggs + Sourdough + Blueberries',items:'2 fried eggs, 1 slice sourdough with thin butter, handful blueberries',calories:380,protein:15,sugar:6,carbs:32,fat:18,satfat:5,fiber:2,useCount:0},
     {id:'b3',name:'Two Fried Eggs + Raisin Toast + Half Grapefruit',items:'2 fried eggs, 1 slice raisin toast with thin butter, half grapefruit',calories:350,protein:14,sugar:14,carbs:34,fat:16,satfat:5,fiber:3,useCount:0},
     {id:'b4',name:'Cottage Cheese Bowl',items:'1/2 cup cottage cheese, canned peaches or pineapple in juice, handful blueberries',calories:200,protein:16,sugar:14,carbs:22,fat:2,satfat:1,fiber:1,notes:'Get fruit packed in juice not syrup.',useCount:0},
@@ -636,6 +636,10 @@ const DEFAULT_MENU={
     {id:'s10',name:'Turkey Sausage Bite + Colby Cheese Cube',items:'1 turkey sausage bite, 1 cubed Colby cheese',calories:85,protein:7,sugar:0,carbs:1,fat:5,satfat:2,fiber:0,approved:true,useCount:0},
     {id:'s11b',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
     {id:'s11b',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
+    {id:'s13',name:'Blue Diamond Lightly Salted Almonds',items:'small handful Blue Diamond lightly salted almonds (~23)',calories:160,protein:6,sugar:1,carbs:6,fat:14,satfat:1,fiber:4,approved:true,useCount:0},
+    {id:'s14',name:'Dark Rye + Natural Peanut Butter + Strawberries',items:'1 slice Oroweat Schwarzwalder Rye, 1 tbsp natural peanut butter, handful strawberries',calories:185,protein:6,sugar:4,carbs:21,fat:6,satfat:1,fiber:3,approved:true,useCount:0},
+    {id:'s13',name:'Blue Diamond Lightly Salted Almonds',items:'small handful Blue Diamond lightly salted almonds (~23)',calories:160,protein:6,sugar:1,carbs:6,fat:14,satfat:1,fiber:4,approved:true,useCount:0},
+    {id:'s14',name:'Dark Rye + Natural Peanut Butter + Strawberries',items:'1 slice Oroweat Schwarzwalder Rye, 1 tbsp natural peanut butter, handful strawberries',calories:185,protein:6,sugar:4,carbs:21,fat:6,satfat:1,fiber:3,approved:true,useCount:0},
     {id:'s12',name:'Oatmeal Raisin Cookie (1 large)',calories:200,protein:3,sugar:18,carbs:30,fat:8,satfat:2,fiber:1,approved:false,useCount:0},
   ],
   lunches:[
@@ -643,7 +647,8 @@ const DEFAULT_MENU={
     {id:'l1',name:'Turkey Patty + Pepperoncinis + Rice + Tomato + Avocado',items:'Turkey patty, pepperoncinis, 1/2 cup rice, sliced tomato, avocado, oil and vinegar',calories:420,protein:28,sugar:3,carbs:32,fat:16,satfat:3,fiber:5,useCount:0},
     {id:'l2',name:'Grilled Chicken + Steamed Broccoli + Rice',items:'4oz chicken breast, 1 cup steamed broccoli, 1/2 cup rice',calories:380,protein:38,sugar:2,carbs:34,fat:6,satfat:1,fiber:4,useCount:0},
     {id:'l3',name:'Salmon + Roasted Zucchini + Half Baked Potato',items:'4oz salmon, roasted zucchini, half baked potato, butter, sour cream',calories:420,protein:32,sugar:3,carbs:28,fat:16,satfat:4,fiber:4,useCount:0},
-    {id:'l4',name:'Caprese Plate',items:'fresh mozzarella, sliced tomato, avocado, oil and vinegar, balsamic vinegar, 1 hard boiled egg',calories:380,protein:20,sugar:4,carbs:10,fat:28,satfat:8,fiber:3,useCount:0},
+    {id:'l5',name:"PB&J on Dark Rye",items:'2 slices Oroweat Schwarzwalder Rye, 1 tbsp Smuckers Natural PB, 1 tbsp apricot preserves',calories:410,protein:12,sugar:11,carbs:57,fat:11,satfat:2,fiber:4,useCount:0},
+    {id:'l4',name:'Caprese Plate',items:'1 tomato, 2 slices fresh mozzarella, olive oil, light balsamic vinaigrette',calories:260,protein:12,sugar:6,carbs:10,fat:18,satfat:7,fiber:2,useCount:0},
   ],
   dinners:[
     {id:'d0_spag',name:'Homemade Turkey Spaghetti (2 cups)',items:'Ground turkey, Trader Joes creamy spaghetti sauce, white spaghetti noodles',calories:620,protein:38,sugar:14,carbs:72,fat:16,satfat:4,fiber:5,useCount:0},
@@ -653,10 +658,15 @@ const DEFAULT_MENU={
     {id:'d4',name:'Just Bare Chicken Bites Salad + Beets + Chickpeas',items:'Just Bare breaded chicken bites, iceberg, beets, chickpeas, 2 tbsp Olive Garden dressing',calories:420,protein:28,sugar:6,carbs:38,fat:16,satfat:2,fiber:7,useCount:0},
     {id:'d5',name:'Baked Salmon + Green Beans + Baked Potato',items:'5oz salmon, steamed green beans, small baked potato, butter, sour cream',calories:480,protein:38,sugar:4,carbs:34,fat:16,satfat:4,fiber:6,useCount:0},
     {id:'d6',name:'Ground Turkey Taco Bowl',items:'ground turkey, black beans, tomato, avocado, sour cream, tortilla strips, hot sauce',calories:520,protein:34,sugar:4,carbs:42,fat:20,satfat:5,fiber:8,useCount:0},
+    {id:'d8',name:'Homemade Turkey Chili (2 cups)',items:'Ground turkey, black beans, kidney beans, crushed tomatoes, carrots, chicken broth, garlic powder, onion powder, basil, oregano',calories:380,protein:32,sugar:8,carbs:42,fat:8,satfat:2,fiber:12,notes:'Makes ~5 servings. High fiber — great for LDL.',useCount:0},
+    {id:'d8',name:'Homemade Turkey Chili (2 cups)',items:'Ground turkey, black beans, kidney beans, crushed tomatoes, carrots, chicken broth, garlic powder, onion powder, basil, oregano',calories:380,protein:32,sugar:8,carbs:42,fat:8,satfat:2,fiber:12,notes:'Makes ~5 servings. High fiber — great for LDL.',useCount:0},
     {id:'d7',name:'Quinoa + Peas and Carrots + Chicken',items:'1/2 cup quinoa with frozen peas and carrots, grilled chicken breast',calories:400,protein:38,sugar:4,carbs:34,fat:6,satfat:1,fiber:6,useCount:0},
   ],
   shakes:[
-    {id:'sh1',name:"Kim's Chocolate Shake",items:'1 scoop Designer Whey Chocolate, 1 tbsp PB2, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:255,protein:32,sugar:9,carbs:22,fat:5,satfat:0,fiber:3,notes:'After your walk.',useCount:0},
+    {id:'sh1',name:"Kim's Chocolate Protein Shake",items:'1.5 scoops Designer Whey Chocolate, 1 tbsp PB2, 2 tbsp plain Greek yogurt, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:325,protein:41,sugar:14,carbs:31,fat:5,satfat:1,fiber:9,notes:'After your walk.',useCount:0},
+    {id:'sh2',name:'Green Power Shake',items:'Handful spinach, half banana, handful blueberries, 1/2 cup plain Greek yogurt, 4oz almond milk, 4oz Fairlife fat free milk',calories:200,protein:14,sugar:18,carbs:32,fat:2,satfat:0,fiber:4,notes:'Light whole food shake. No protein powder.',useCount:0},
+    {id:'sh3',name:'Strawberry PB Shake',items:'1.5 scoops Designer Whey Chocolate, 1 tbsp PB2, 1/2 cup plain Greek yogurt, handful strawberries, 4oz almond milk, 4oz Fairlife fat free milk',calories:310,protein:42,sugar:10,carbs:26,fat:5,satfat:1,fiber:5,notes:'Strawberry forward. Higher protein.',useCount:0},
+    {id:'sh4',name:'Banana Berry Shake',items:'Half banana, handful blueberries, handful strawberries, 2 tbsp plain Greek yogurt, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 1 tbsp PB2',calories:220,protein:12,sugar:20,carbs:36,fat:3,satfat:0,fiber:5,notes:'No protein powder. Naturally sweet. Light option.',useCount:0},
   ],
   need_protein:[
     {id:'np1',name:'Canned Tuna (3oz)',items:'3oz canned tuna in water',calories:100,protein:22,sugar:0,carbs:0,fat:1,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
@@ -1047,11 +1057,12 @@ function renderProgress(){
   const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard Work',carwash:'Car Wash',steps:'Steps'};
   const exIcons={walk:'🐕',bike:'🚴',weights:'💪',yard:'🌿',carwash:'🚗',steps:'👟'};
 
-  // Build THIS WEEK activity summary (Sun-Sat)
+  // Build THIS WEEK activity summary (Mon-Sun)
   const now2=new Date();
   const dow2=now2.getDay(); // 0=Sun
+  const daysFromMon2=dow2===0?6:dow2-1;
   const weekStart2=new Date(now2);
-  weekStart2.setDate(now2.getDate()-dow2);
+  weekStart2.setDate(now2.getDate()-daysFromMon2);
   weekStart2.setHours(0,0,0,0);
   const actSummary={};
   S.weekly.filter(d=>{
@@ -1066,7 +1077,8 @@ function renderProgress(){
     });
   });
   // Add today's live exercises if not yet saved
-  const todayInWeekly=S.weekly.find(d=>d.dateKey===dk);
+  const normDK2=k=>{if(!k)return k;const p=k.split('-');return p[0]+'-'+p[1].padStart(2,'0')+'-'+p[2].padStart(2,'0');};
+  const todayInWeekly=S.weekly.find(d=>normDK2(d.dateKey)===normDK2(dk));
   if(!todayInWeekly){
     S.exercises.forEach(ex=>{
       if(ex.type==='steps') return;
