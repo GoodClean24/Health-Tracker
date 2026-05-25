@@ -414,6 +414,26 @@ input, textarea { font-family: inherit; }
       </div>
     </div>
 
+    <!-- Need Protein -->
+    <div style="border-left:3px solid #6ee7b7;padding:10px 14px;margin-bottom:14px;background:rgba(110,231,183,0.07);border-radius:0 10px 10px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-protein')">
+        <div style="font-weight:700;font-size:13px;color:#6ee7b7;">Need More Protein?</div>
+        <div id="zone-protein-arrow" style="color:#6ee7b7;font-size:18px;font-weight:700;">+</div>
+      </div>
+      <div id="zone-protein-sub" style="display:none;font-size:11px;color:#94a3b8;margin-bottom:10px;">Sorted highest to lowest. Grayed = outside current time zone.</div>
+      <div id="zone-protein-list" style="display:none;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- Need Fiber -->
+    <div style="border-left:3px solid #a78bfa;padding:10px 14px;margin-bottom:14px;background:rgba(167,139,250,0.07);border-radius:0 10px 10px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:2px;" onclick="toggleZone('zone-fiber')">
+        <div style="font-weight:700;font-size:13px;color:#a78bfa;">Need More Fiber?</div>
+        <div id="zone-fiber-arrow" style="color:#a78bfa;font-size:18px;font-weight:700;">+</div>
+      </div>
+      <div id="zone-fiber-sub" style="display:none;font-size:11px;color:#94a3b8;margin-bottom:10px;">Sorted highest to lowest. Grayed = outside current time zone.</div>
+      <div id="zone-fiber-list" style="display:none;flex-direction:column;gap:6px;"></div>
+    </div>
+
     <!-- Sweet craving tip -->
     <div style="background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.25);border-radius:12px;padding:14px;">
       <div style="font-weight:700;font-size:13px;color:#6ee7b7;margin-bottom:6px;">Sweet craving? Try these instead:</div>
@@ -584,11 +604,11 @@ const TDEE=1950;
 const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
-const MENU_VERSION='v2025-05-24';
+const MENU_VERSION='v2026-05-25';
 const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
-const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes',need_protein:'Need Protein',need_fiber:'Need Fiber'};
+const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes'};
 
 const DEFAULT_MENU={
   breakfasts:[
@@ -639,7 +659,7 @@ const DEFAULT_MENU={
     {id:'sh1',name:"Kim's Chocolate Shake",items:'1 scoop Designer Whey Chocolate, 1 tbsp PB2, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:255,protein:32,sugar:9,carbs:22,fat:5,satfat:0,fiber:3,notes:'After your walk.',useCount:0},
   ],
   need_protein:[
-    {id:'np1',name:'Canned Tuna (3oz)',items:'3oz canned tuna in water, eat straight or with crackers',calories:100,protein:22,sugar:0,carbs:0,fat:1,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np1',name:'Canned Tuna (3oz)',items:'3oz canned tuna in water',calories:100,protein:22,sugar:0,carbs:0,fat:1,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
     {id:'np2',name:'Plain Greek Yogurt (1/2 cup)',items:'1/2 cup plain nonfat Greek yogurt',calories:70,protein:12,sugar:4,carbs:5,fat:0,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
     {id:'np3',name:'Cottage Cheese (1/2 cup)',items:'1/2 cup low-fat cottage cheese',calories:90,protein:12,sugar:3,carbs:5,fat:1,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
     {id:'np4',name:'Hard Boiled Eggs (2)',items:'2 hard boiled eggs',calories:140,protein:12,sugar:0,carbs:1,fat:10,satfat:3,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
@@ -647,7 +667,7 @@ const DEFAULT_MENU={
     {id:'np6',name:'String Cheese + Hard Boiled Egg',items:'1 string cheese, 1 hard boiled egg',calories:155,protein:13,sugar:0,carbs:1,fat:11,satfat:4,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
     {id:'np7',name:'Edamame (1/2 cup)',items:'1/2 cup shelled edamame',calories:95,protein:9,sugar:1,carbs:8,fat:4,satfat:0,fiber:4,timeZone:'green,yellow,orange',useCount:0},
     {id:'np8',name:'String Cheese (1)',items:'1 string cheese',calories:80,protein:7,sugar:0,carbs:1,fat:5,satfat:3,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
-    {id:'np9',name:'Greek Yogurt + Honey',items:'1/2 cup plain Greek yogurt, drizzle honey',calories:120,protein:12,sugar:10,carbs:15,fat:0,satfat:0,fiber:0,timeZone:'green,yellow,orange,red',useCount:0},
+    {id:'np9',name:'Greek Yogurt + Honey',items:'1/2 cup plain Greek yogurt, drizzle honey',calories:120,protein:12,sugar:10,carbs:15,fat:0,satfat:0,fiber:0,timeZone:'green,yellow',useCount:0},
     {id:'np10',name:'Almonds + String Cheese',items:'small handful almonds, 1 string cheese',calories:235,protein:10,sugar:1,carbs:6,fat:17,satfat:4,fiber:2,timeZone:'green,yellow,orange,red',useCount:0},
     {id:'np11',name:'Rice Cake + Natural Peanut Butter',items:'1 rice cake, 1 tbsp natural peanut butter',calories:130,protein:4,sugar:1,carbs:16,fat:5,satfat:1,fiber:1,timeZone:'green,yellow',useCount:0},
   ],
@@ -1027,9 +1047,17 @@ function renderProgress(){
   const exNames={walk:'Walk',bike:'Bike',weights:'Weights',yard:'Yard Work',carwash:'Car Wash',steps:'Steps'};
   const exIcons={walk:'🐕',bike:'🚴',weights:'💪',yard:'🌿',carwash:'🚗',steps:'👟'};
 
-  // Build lifetime activity summary
+  // Build THIS WEEK activity summary (Sun-Sat)
+  const now2=new Date();
+  const dow2=now2.getDay(); // 0=Sun
+  const weekStart2=new Date(now2);
+  weekStart2.setDate(now2.getDate()-dow2);
+  weekStart2.setHours(0,0,0,0);
   const actSummary={};
-  S.weekly.forEach(day=>{
+  S.weekly.filter(d=>{
+    const dd=new Date(d.dateKey+'T12:00:00');
+    return dd>=weekStart2;
+  }).forEach(day=>{
     (day.exercises||[]).forEach(ex=>{
       if(ex.type==='steps') return;
       if(!actSummary[ex.type]) actSummary[ex.type]={count:0,burned:0};
@@ -1037,10 +1065,20 @@ function renderProgress(){
       actSummary[ex.type].burned+=ex.burned||0;
     });
   });
+  // Add today's live exercises if not yet saved
+  const todayInWeekly=S.weekly.find(d=>d.dateKey===dk);
+  if(!todayInWeekly){
+    S.exercises.forEach(ex=>{
+      if(ex.type==='steps') return;
+      if(!actSummary[ex.type]) actSummary[ex.type]={count:0,burned:0};
+      actSummary[ex.type].count++;
+      actSummary[ex.type].burned+=ex.burned||0;
+    });
+  }
   const totalBurnedAll=Object.values(actSummary).reduce((a,v)=>a+v.burned,0);
   const legendHtml=Object.keys(actSummary).length?`
     <div style="background:#1a1d27;border:1px solid #2d3748;border-radius:14px;padding:14px 16px;margin-bottom:14px;">
-      <div style="font-size:12px;font-weight:700;color:#6ee7b7;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Activity Summary</div>
+      <div style="font-size:12px;font-weight:700;color:#6ee7b7;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">This Week's Activity</div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
         ${Object.entries(actSummary).map(([type,data])=>`
           <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1057,37 +1095,72 @@ function renderProgress(){
       </div>
     </div>`:'';
 
-  dl.innerHTML=legendHtml+[...S.weekly].reverse().map(day=>{
-    const calOk=(day.net||day.calories)<=GOALS.calories;
-    const protOk=day.protein>=GOALS.protein*0.9;
-    const defOk=(day.deficit||0)>=GOALS.deficit;
-    const burnOk=(day.burned||0)>=GOALS.burn;
-    const score=[calOk,protOk,defOk].filter(Boolean).length;
-    const color=score===3?'#6ee7b7':score===2?'#fbbf24':'#f87171';
-    const label=score===3?'Great Day':score===2?'Almost':'Missed';
-    const bg=score===3?'rgba(110,231,183,0.08)':score===2?'rgba(251,191,36,0.08)':'rgba(248,113,113,0.08)';
-    const border=score===3?'rgba(110,231,183,0.25)':score===2?'rgba(251,191,36,0.25)':'rgba(248,113,113,0.25)';
-    const exList=day.exercises&&day.exercises.length?day.exercises.map(e=>`${exNames[e.type]||e.type} ${e.minutes||0}min${e.notes?' ('+e.notes+')':''}`).join(' · '):'No exercise logged';
-    const burnColor=burnOk?'#6ee7b7':'#f87171';
-    const sleepLine=day.sleepHours?`<div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sleep: ${day.sleepHours}h</div>`:'';
-    return`<div style="background:${bg};border:1px solid ${border};border-radius:14px;padding:14px 16px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div style="font-size:14px;font-weight:700;">${day.date}</div>
-          <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${day.count} foods · ${fmt(day.calories)} cal eaten</div>
-          ${sleepLine}
+  // Group days by week (Sun-Sat)
+  const getWeekKey=(dateKey)=>{
+    const d=new Date(dateKey+'T12:00:00');
+    const dow=d.getDay(); // 0=Sun, 1=Mon...6=Sat
+    const daysFromMon=dow===0?6:dow-1;
+    const mon=new Date(d); mon.setDate(d.getDate()-daysFromMon);
+    return mon.toISOString().slice(0,10);
+  };
+  const weeks={};
+  [...S.weekly].reverse().forEach(day=>{
+    const wk=getWeekKey(day.dateKey);
+    if(!weeks[wk]) weeks[wk]=[];
+    weeks[wk].push(day);
+  });
+  const weekKeys=Object.keys(weeks).sort((a,b)=>b>a?1:-1);
+  const now3=new Date();
+  const dow3=now3.getDay();
+  const daysFromMon3=dow3===0?6:dow3-1;
+  const thisMon=new Date(now3); thisMon.setDate(now3.getDate()-daysFromMon3); thisMon.setHours(0,0,0,0);
+  const thisWeekKey=thisMon.toISOString().slice(0,10);
+
+  dl.innerHTML=legendHtml+weekKeys.map((wk,wi)=>{
+    const isThisWeek=wk===thisWeekKey;
+    const wkDays=weeks[wk];
+    const wkEnd=new Date(wk+'T12:00:00'); wkEnd.setDate(wkEnd.getDate()+6);
+    const wkLabel=`Week of ${new Date(wk+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${wkEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+    const wkId='wk_'+wk.replace(/-/g,'');
+    const daysHtml=wkDays.map(day=>{
+      const calOk=(day.net||day.calories)<=GOALS.calories;
+      const protOk=day.protein>=GOALS.protein*0.9;
+      const defOk=(day.deficit||0)>=GOALS.deficit;
+      const burnOk=(day.burned||0)>=GOALS.burn;
+      const score=[calOk,protOk,defOk].filter(Boolean).length;
+      const color=score===3?'#6ee7b7':score===2?'#fbbf24':'#f87171';
+      const label=score===3?'Great Day':score===2?'Almost':'Missed';
+      const bg=score===3?'rgba(110,231,183,0.08)':score===2?'rgba(251,191,36,0.08)':'rgba(248,113,113,0.08)';
+      const border=score===3?'rgba(110,231,183,0.25)':score===2?'rgba(251,191,36,0.25)':'rgba(248,113,113,0.25)';
+      const exList=day.exercises&&day.exercises.length?day.exercises.map(e=>`${exNames[e.type]||e.type} ${e.minutes||0}min${e.notes?' ('+e.notes+')':''}`).join(' · '):'No exercise logged';
+      const burnColor=burnOk?'#6ee7b7':'#f87171';
+      const sleepLine=day.sleepHours?`<div style="font-size:11px;color:#94a3b8;margin-top:3px;">Sleep: ${day.sleepHours}h</div>`:'';
+      return`<div style="background:${bg};border:1px solid ${border};border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <div style="font-size:14px;font-weight:700;">${day.date}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${day.count} foods · ${fmt(day.calories)} cal eaten</div>
+            ${sleepLine}
+          </div>
+          <div style="background:${color};color:#0f1117;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;white-space:nowrap;">${label}</div>
         </div>
-        <div style="background:${color};color:#0f1117;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;white-space:nowrap;">${label}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${calOk?'#6ee7b7':'#f87171'};">${fmt(day.net||day.calories)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NET CAL ${calOk?'✓':'over'}</div></div>
+          <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${protOk?'#6ee7b7':'#fbbf24'};">${fmt(day.protein)}g</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">PROTEIN ${protOk?'✓':'low'}</div></div>
+          <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${burnColor};">${fmt(day.burned||0)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">BURNED ${burnOk?'✓':'< 450'}</div></div>
+        </div>
+        <div style="background:#1a1d27;border-radius:10px;padding:10px;">
+          <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Activity</div>
+          <div style="font-size:12px;color:${day.exercises&&day.exercises.length?'#e2e8f0':'#94a3b8'};">${exList}</div>
+        </div>
+      </div>`;
+    }).join('');
+    return`<div style="margin-bottom:14px;">
+      <div onclick="document.getElementById('${wkId}').style.display=document.getElementById('${wkId}').style.display==='none'?'block':'none';this.querySelector('.wk-arrow').textContent=document.getElementById('${wkId}').style.display==='none'?'+':'−';" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#22263a;border-radius:12px;padding:12px 16px;margin-bottom:8px;">
+        <div><span style="font-size:13px;font-weight:700;color:${isThisWeek?'#6ee7b7':'#94a3b8'};">${isThisWeek?'This Week':'Previous Week'}</span><span style="font-size:11px;color:#94a3b8;margin-left:8px;">${wkLabel}</span></div>
+        <span class="wk-arrow" style="color:#6ee7b7;font-size:18px;">${isThisWeek?'−':'+'}</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
-        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${calOk?'#6ee7b7':'#f87171'};">${fmt(day.net||day.calories)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">NET CAL ${calOk?'✓':'over'}</div></div>
-        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${protOk?'#6ee7b7':'#fbbf24'};">${fmt(day.protein)}g</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">PROTEIN ${protOk?'✓':'low'}</div></div>
-        <div style="background:#1a1d27;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:14px;font-weight:800;color:${burnColor};">${fmt(day.burned||0)}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px;">BURNED ${burnOk?'✓':'< 450'}</div></div>
-      </div>
-      <div style="background:#1a1d27;border-radius:10px;padding:10px;">
-        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Activity</div>
-        <div style="font-size:12px;color:${day.exercises&&day.exercises.length?'#e2e8f0':'#94a3b8'};">${exList}</div>
-      </div>
+      <div id="${wkId}" style="display:${isThisWeek?'block':'none'};">${daysHtml}</div>
     </div>`;
   }).join('');
 }
@@ -1127,70 +1200,10 @@ function getCurrentZone(){
 function renderMenuGuide(){
   // Separate pills: regular sections vs boost sections
   const regularSecs=['breakfasts','snacks','lunches','dinners','shakes'];
-  const boostSecs=['need_protein','need_fiber'];
-  const t=totals();
-  const needPro=t.protein<GOALS.protein;
-  const needFib=t.fiber<GOALS.fiber;
-  const pillsHtml=regularSecs.map(sec=>`<button onclick="setMenuSection('${sec}')" style="border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid ${S.menuSection===sec?'#6ee7b7':'#2d3748'};background:${S.menuSection===sec?'#6ee7b7':'#1a1d27'};color:${S.menuSection===sec?'#0f1117':'#94a3b8'};">${SECTION_LABELS[sec]}</button>`).join('')+
-    boostSecs.map(sec=>{
-      const isNeed=sec==='need_protein'?needPro:needFib;
-      const active=S.menuSection===sec;
-      return `<button onclick="setMenuSection('${sec}')" style="border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${active?'#f97316':isNeed?'rgba(249,115,22,0.5)':'#2d3748'};background:${active?'#f97316':'#1a1d27'};color:${active?'#fff':isNeed?'#f97316':'#94a3b8'};">${SECTION_LABELS[sec]}${isNeed?' ⚠':''}${!active&&isNeed?'':''}</button>`;
-    }).join('');
+  const pillsHtml=regularSecs.map(sec=>`<button onclick="setMenuSection('${sec}')" style="border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid ${S.menuSection===sec?'#6ee7b7':'#2d3748'};background:${S.menuSection===sec?'#6ee7b7':'#1a1d27'};color:${S.menuSection===sec?'#0f1117':'#94a3b8'};">${SECTION_LABELS[sec]}</button>`).join('');
   document.getElementById('menuSectionPills').innerHTML=pillsHtml;
 
   // Boost sections get special rendering
-  if(S.menuSection==='need_protein'||S.menuSection==='need_fiber'){
-    const isProtein=S.menuSection==='need_protein';
-    const zone=getCurrentZone();
-    const zoneOrder={green:0,yellow:1,orange:2,red:3};
-    const zoneNames={green:'Morning',yellow:'Afternoon',orange:'Evening',red:'Late Night'};
-    const zoneColors={green:'#22c55e',yellow:'#eab308',orange:'#f97316',red:'#ef4444'};
-    const allItems=[...(DEFAULT_MENU[S.menuSection]||[])];
-    // Also pull from other sections with high protein/fiber
-    Object.keys(S.menu).forEach(sec=>{
-      if(['need_protein','need_fiber'].includes(sec)) return;
-      (S.menu[sec]||[]).forEach(item=>{
-        const val=isProtein?(item.protein||0):(item.fiber||0);
-        const threshold=isProtein?15:4;
-        if(val>=threshold && !allItems.find(x=>x.name===item.name)){
-          allItems.push({...item,timeZone:'green,yellow,orange,red',_fromMenu:true});
-        }
-      });
-    });
-    // Sort: current zone first, then by protein/fiber desc
-    const sorted=allItems.sort((a,b)=>{
-      const aZones=(a.timeZone||'green').split(',');
-      const bZones=(b.timeZone||'green').split(',');
-      const aHas=aZones.includes(zone)?0:1;
-      const bHas=bZones.includes(zone)?0:1;
-      if(aHas!==bHas) return aHas-bHas;
-      return isProtein?((b.protein||0)-(a.protein||0)):((b.fiber||0)-(a.fiber||0));
-    });
-    const remaining=isProtein?Math.max(0,GOALS.protein-t.protein):Math.max(0,GOALS.fiber-t.fiber);
-    document.getElementById('menuItems').innerHTML=`<div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#f97316;">You need <strong>${remaining}${isProtein?'g protein':'g fiber'}</strong> more today. Foods available now (${zoneNames[zone]} zone) shown first.</div>`+
-    sorted.map((item,idx)=>{
-      const zones=(item.timeZone||'green,yellow,orange,red').split(',');
-      const inZone=zones.includes(zone);
-      const val=isProtein?(item.protein||0):(item.fiber||0);
-      const zoneColor=zoneColors[zone];
-      return `<div style="background:#1a1d27;border-radius:14px;padding:14px;margin-bottom:8px;border:1px solid ${inZone?'rgba(110,231,183,0.2)':'#2d3748'};opacity:${inZone?1:0.5};">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-          <div style="flex:1;">
-            <div style="font-weight:700;font-size:13px;color:${inZone?'#e2e8f0':'#94a3b8'};">${item.name}</div>
-            ${item.items?`<div style="font-size:11px;color:#94a3b8;margin-top:1px;">${item.items}</div>`:''}
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-            <span style="font-size:14px;font-weight:800;color:${inZone?'#6ee7b7':'#94a3b8'};">${val}g ${isProtein?'protein':'fiber'}</span>
-            <span style="font-size:10px;color:${inZone?zoneColor:'#94a3b8'};font-weight:600;">${inZone?'✓ OK now':'Best '+zones[0]}</span>
-          </div>
-        </div>
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:8px;">${item.calories} cal · ${item.protein}g pro · ${item.fiber||0}g fiber</div>
-        ${!item._fromMenu?`<div style="display:flex;justify-content:flex-end;gap:6px;"><button onclick="editMenuItem('${S.menuSection}',${idx})" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;cursor:pointer;font-size:11px;padding:3px 8px;">edit</button><button onclick="deleteMenuItem('${S.menuSection}',${idx})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;">delete</button></div>`:''}
-      </div>`;
-    }).join('');
-    return;
-  }
 
   const list=[...(S.menu[S.menuSection]||[])].sort((a,b)=>(b.useCount||0)-(a.useCount||0));
   document.getElementById('menuItems').innerHTML=list.map((item,idx)=>`<div style="background:#1a1d27;border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid #2d3748;">
@@ -1249,10 +1262,48 @@ function toggleZone(id){
   const sub=document.getElementById(id+'-sub');
   const list=document.getElementById(id+'-list');
   const arrow=document.getElementById(id+'-arrow');
-  const open=sub?sub.style.display!=='none':list.style.display!=='none';
+  const open=sub?sub.style.display!=='none':false;
   if(sub) sub.style.display=open?'none':'block';
-  if(list) list.style.display=open?'none':'flex';
+  if(list){
+    list.style.display=open?'none':'flex';
+    if(!open&&(id==='zone-protein'||id==='zone-fiber')){
+      populateBoostZone(id,list);
+    }
+  }
   if(arrow) arrow.textContent=open?'+':'−';
+}
+
+function populateBoostZone(id, listEl){
+  const isProtein=id==='zone-protein';
+  const zone=getCurrentZone();
+  const zoneColors={green:'#22c55e',yellow:'#eab308',orange:'#f97316',red:'#ef4444'};
+  const items=[...(DEFAULT_MENU[isProtein?'need_protein':'need_fiber']||[])];
+  const sorted=items.sort((a,b)=>{
+    const aZones=(a.timeZone||'green,yellow,orange,red').split(',');
+    const bZones=(b.timeZone||'green,yellow,orange,red').split(',');
+    const aIn=aZones.includes(zone)?0:1;
+    const bIn=bZones.includes(zone)?0:1;
+    if(aIn!==bIn) return aIn-bIn;
+    return isProtein?((b.protein||0)-(a.protein||0)):((b.fiber||0)-(a.fiber||0));
+  });
+  listEl.innerHTML=sorted.map(item=>{
+    const zones=(item.timeZone||'green,yellow,orange,red').split(',');
+    const inZone=zones.includes(zone);
+    const val=isProtein?(item.protein||0):(item.fiber||0);
+    return`<div style="background:#22263a;border-radius:8px;padding:10px 12px;opacity:${inZone?1:0.4};">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;color:${inZone?'#e2e8f0':'#94a3b8'};">${item.name}</div>
+          ${item.items?`<div style="font-size:10px;color:#94a3b8;margin-top:2px;">${item.items}</div>`:''}
+        </div>
+        <div style="text-align:right;margin-left:10px;">
+          <div style="font-size:13px;font-weight:800;color:${inZone?(isProtein?'#6ee7b7':'#a78bfa'):'#94a3b8'};">${val}g</div>
+          <div style="font-size:9px;color:#94a3b8;">${item.calories} cal</div>
+        </div>
+      </div>
+      ${!inZone?`<div style="font-size:10px;color:#94a3b8;margin-top:4px;">Best earlier — ${zones[0]} zone</div>`:''}
+    </div>`;
+  }).join('');
 }
 
 // Actions
