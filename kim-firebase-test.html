@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kim's Firebase Test</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.card { background: #1a1d27; border-radius: 16px; padding: 28px; max-width: 400px; width: 100%; border: 1px solid #2d3748; }
+h1 { font-size: 20px; font-weight: 800; color: #6ee7b7; margin-bottom: 6px; }
+p { font-size: 13px; color: #94a3b8; margin-bottom: 20px; line-height: 1.6; }
+input { width: 100%; background: #0f1117; border: 1px solid #2d3748; border-radius: 8px; padding: 10px 14px; color: #e2e8f0; font-size: 14px; outline: none; margin-bottom: 12px; font-family: inherit; }
+button { width: 100%; background: #6ee7b7; color: #0f1117; border: none; border-radius: 10px; padding: 12px; font-weight: 700; font-size: 14px; cursor: pointer; margin-bottom: 10px; font-family: inherit; }
+.btn-ghost { background: none; border: 1px solid #2d3748; color: #94a3b8; }
+.status { background: #22263a; border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.7; min-height: 60px; }
+.ok { color: #6ee7b7; }
+.err { color: #f87171; }
+.info { color: #fbbf24; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Firebase Connection Test</h1>
+  <p>Type something, save it, close this page, reopen it — your text should still be there.</p>
+  <input id="testInput" placeholder="Type anything here..." />
+  <button onclick="saveData()">Save to Firebase</button>
+  <button class="btn-ghost" onclick="loadData()">Load from Firebase</button>
+  <button class="btn-ghost" onclick="clearData()">Clear</button>
+  <div class="status" id="status">Connecting to Firebase...</div>
+</div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+window.addEventListener('load', function() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6SS9LnSTx17W0P9-19AXwUOfxUZ0UfUk",
+    authDomain: "kim-health-tracker.firebaseapp.com",
+    projectId: "kim-health-tracker",
+    storageBucket: "kim-health-tracker.firebasestorage.app",
+    messagingSenderId: "937466441884",
+    appId: "1:937466441884:web:3e4a9ef4500653d479bd59"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  window.db = firebase.firestore();
+  window.auth = firebase.auth();
+
+  setStatus('Signing in anonymously...', 'info');
+
+  auth.signInAnonymously()
+    .then(function(result) {
+      window.userId = result.user.uid;
+      setStatus('Connected! User ID: ' + userId.slice(0,8) + '...\n\nTry typing something and tapping Save.', 'ok');
+      loadData();
+    })
+    .catch(function(err) {
+      setStatus('Connection failed: ' + err.message, 'err');
+    });
+});
+
+function setStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status ' + (type || '');
+}
+
+window.saveData = function() {
+  if (!window.userId) { setStatus('Not connected yet.', 'err'); return; }
+  const text = document.getElementById('testInput').value;
+  if (!text.trim()) { setStatus('Type something first!', 'err'); return; }
+  setStatus('Saving...', 'info');
+  db.collection('test').doc(userId).set({ text: text, savedAt: new Date().toISOString() })
+    .then(function() {
+      setStatus('Saved! Close this page and reopen it.\nYour text should still be here.', 'ok');
+    })
+    .catch(function(err) {
+      setStatus('Save failed: ' + err.message, 'err');
+    });
+};
+
+window.loadData = function() {
+  if (!window.userId) { setStatus('Not connected yet.', 'err'); return; }
+  setStatus('Loading...', 'info');
+  db.collection('test').doc(userId).get()
+    .then(function(doc) {
+      if (doc.exists) {
+        document.getElementById('testInput').value = doc.data().text;
+        setStatus('Loaded from Firebase!\nSaved at: ' + doc.data().savedAt, 'ok');
+      } else {
+        setStatus('No saved data yet. Type something and tap Save.', 'info');
+      }
+    })
+    .catch(function(err) {
+      setStatus('Load failed: ' + err.message, 'err');
+    });
+};
+
+window.clearData = function() {
+  if (!window.userId) return;
+  db.collection('test').doc(userId).delete()
+    .then(function() {
+      document.getElementById('testInput').value = '';
+      setStatus('Cleared from Firebase.', 'info');
+    });
+};
+</script>
+</body>
+</html>
