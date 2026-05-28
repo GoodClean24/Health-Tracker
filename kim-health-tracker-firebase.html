@@ -320,6 +320,32 @@ input, textarea { font-family: inherit; }
       <button class="btn-ghost" onclick="addExercise('yard')" style="font-size:11px;padding:7px 10px;">+ Yard Work</button>
       <button class="btn-ghost" onclick="addExercise('carwash')" style="font-size:11px;padding:7px 10px;">+ Car Wash</button>
     </div>
+    <div style="margin-top:10px;">
+      <div style="font-size:11px;color:#6ee7b7;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Cardio Burst</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="cardioSelect" class="inp" style="flex:1;font-size:12px;">
+          <option value="">Choose exercise...</option>
+          <option value="jumping_jacks">Jumping Jacks (aim 3-5 min)</option>
+          <option value="high_knees">High Knees (aim 3-5 min)</option>
+          <option value="jump_rope">Jump Rope / Mimic (aim 3-5 min)</option>
+          <option value="burpees">Modified Burpees (aim 2-3 min)</option>
+          <option value="mountain_climbers">Mountain Climbers (aim 2-3 min)</option>
+          <option value="squat_reach">Squat to Standing Reach (aim 3 min)</option>
+          <option value="side_steps">Side Step Touches (aim 3-5 min)</option>
+          <option value="bicycle_crunches">Standing Bicycle Crunches (aim 2-3 min)</option>
+          <option value="arm_circles">Arm Circles + Shoulder Rolls (recovery)</option>
+          <option value="wall_pushups">Wall Push-Ups (aim 2-3 min)</option>
+          <option value="pushups">Push-Ups (aim 2-3 min)</option>
+          <option value="plank">Plank (aim 1-2 min)</option>
+          <option value="calf_raises">Calf Raises (aim 2-3 min)</option>
+          <option value="lateral_lunges">Lateral Lunges (aim 2-3 min)</option>
+          <option value="march">March in Place (aim 3-5 min)</option>
+        </select>
+        <button class="btn-ghost" onclick="addCardio()" style="font-size:11px;padding:7px 12px;white-space:nowrap;">+ Add</button>
+      </div>
+    </div>
+    <div style="display:none;">
+    </div>
     <div id="totalBurnedRow" style="display:none;background:#22263a;border-radius:10px;padding:10px 14px;justify-content:space-between;"><span style="font-size:13px;color:#94a3b8;">Total Burned Today</span><span id="totalBurnedDisplay" style="font-size:13px;font-weight:700;color:#6ee7b7;">0 kcal</span></div>
   </div>
 
@@ -636,7 +662,10 @@ input, textarea { font-family: inherit; }
 <script>
 const GOALS={calories:1600,protein:110,sugar:40,carbs:150,fat:55,water:100,deficit:500,satfat:13,fiber:25,burn:450};
 const TDEE=1950;
-const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3};
+const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3.3,
+  jumping_jacks:9,high_knees:9,jump_rope:10,burpees:10,mountain_climbers:9,
+  squat_reach:8,side_steps:7,bicycle_crunches:8,arm_circles:4,
+  wall_pushups:5,pushups:7,calf_raises:5,lateral_lunges:7,march:6,plank:4};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
 const MENU_VERSION='v2026-05-25f';
@@ -842,8 +871,12 @@ async function loadFromFirebase(){
   const bwDoc=await fbGet('data','bloodwork');
   if(bwDoc&&bwDoc.bloodwork) S.bloodwork=bwDoc.bloodwork;
   
-  // Load goal weight
-  const gwDoc=await fbGet('data','goalweight');
+  // Load sleep separately (immediate save)
+  const sleepDoc=await fbGet('data','sleep');
+  if(sleepDoc&&sleepDoc.date===dk){
+    S.sleepHours=sleepDoc.sleepHours||7;
+    S.sleepLogged=sleepDoc.sleepLogged||false;
+  }
   if(gwDoc&&gwDoc.goalWeight) GOAL_WEIGHT=gwDoc.goalWeight;
   
   setSaveStatus('Ready','#94a3b8');
@@ -1028,7 +1061,11 @@ function renderAll(){
 }
 
 function renderExercises(){
-  const names={walk:'Walk',bike:'Bike Ride',weights:'Weight Training',yard:'Yard Work',carwash:'Car Wash'};
+  const names={walk:'Walk',bike:'Bike Ride',weights:'Weight Training',yard:'Yard Work',carwash:'Car Wash',
+    jumping_jacks:'Jumping Jacks',high_knees:'High Knees',jump_rope:'Jump Rope',burpees:'Modified Burpees',
+    mountain_climbers:'Mountain Climbers',squat_reach:'Squat to Standing Reach',side_steps:'Side Step Touches',
+    bicycle_crunches:'Standing Bicycle Crunches',arm_circles:'Arm Circles',wall_pushups:'Wall Push-Ups',
+    pushups:'Push-Ups',plank:'Plank',calf_raises:'Calf Raises',lateral_lunges:'Lateral Lunges',march:'March in Place'};
   document.getElementById('exerciseList').innerHTML=S.exercises.map((ex,i)=>`<div style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-weight:700;font-size:13px;color:#6ee7b7;">${names[ex.type]||ex.type}</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;color:#6ee7b7;font-weight:700;">${ex.burned} kcal</span><button onclick="removeExercise(${i})" style="background:none;border:none;color:#f87171;font-size:18px;cursor:pointer;">x</button></div></div><div style="display:flex;gap:8px;margin-bottom:${ex.type==='weights'?'8px':'0px'}">${(ex.type==='walk'||ex.type==='bike')?`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Miles</label><input class="inp" type="number" value="${ex.miles||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'miles',this.value)" /></div>`:''}<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Minutes</label><input class="inp" type="number" value="${ex.minutes||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'minutes',this.value)" /></div></div>${ex.type==='weights'?`<div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">What did you do? (optional)</label><input class="inp" value="${ex.notes||''}" placeholder="e.g. squats, lunges, push-ups" style="font-size:12px;" onchange="updateExercise(${i},'notes',this.value)" /></div>`:''}</div>`).join('');
 }
 
@@ -1047,8 +1084,8 @@ function sortEntries(entries){
     }
     return {breakfasts:0,shakes:0,lunches:2,dinners:4,untagged:6}[tag]??6;
   }
-  // Sort by category first, then newest within each category at top
-  return [...entries].sort((a,b)=>sv(a)-sv(b)||((b.timestamp||0)-(a.timestamp||0)));
+  // Sort by category first, then by log order (oldest first) within each category
+  return [...entries].sort((a,b)=>sv(a)-sv(b)||((a.timestamp||0)-(b.timestamp||0)));
 }
 
 const TAG_LABELS={breakfasts:'Breakfast',shakes:'Breakfast',snacks:'Snack',lunches:'Lunch',dinners:'Dinner',untagged:''};
@@ -1561,6 +1598,15 @@ function saveEditItem(){
 function changeWater(d){S.waterCups=Math.max(0,S.waterCups+d);persist();renderAll();}
 function updateSteps(){S.steps=document.getElementById('stepsInput').value;persist();renderAll();}
 function addExercise(type){S.exercises.push({id:Date.now(),type,miles:'',minutes:'',burned:0});persist();renderAll();}
+
+function addCardio(){
+  const sel=document.getElementById('cardioSelect');
+  const type=sel.value;
+  if(!type){showToast('Pick an exercise first',true);return;}
+  S.exercises.push({id:Date.now(),type,minutes:'',burned:0,isCardio:true});
+  sel.value='';
+  persist();renderAll();
+}
 function updateExercise(i,field,val){S.exercises[i][field]=val;S.exercises[i].burned=Math.round(BURN[S.exercises[i].type]*(parseFloat(S.exercises[i].minutes)||0));persist();renderAll();}
 function removeExercise(i){S.exercises.splice(i,1);persist();renderAll();}
 function logMilk(){if(S.milkLogged)return;addEntry({name:'Fairlife Chocolate Milk - Post Workout Recovery',calories:140,protein:13,sugar:12,carbs:23,fat:2});S.milkLogged=true;persist();renderAll();showToast('Chocolate milk logged!');}
@@ -1617,6 +1663,7 @@ function editGoalWeight(){
   if(!val||val<100||val>300) return;
   GOAL_WEIGHT=val;
   localStorage.setItem('kim_tracker_goalweight',val);
+  fbSave('data','goalweight',{goalWeight:val});
   renderAll();
   showToast('Goal updated to '+val+' lbs!');
 }
@@ -1845,6 +1892,8 @@ function toggleSleep(){
 function logSleep(){
   S.sleepLogged=true;
   persist();
+  // Save sleep immediately to Firebase without waiting for debounce
+  fbSave('data','sleep',{sleepHours:S.sleepHours,sleepLogged:true,date:dk});
   const advice=getSleepAdvice(S.sleepHours);
   const sub=document.getElementById('sleepSubtitle');
   if(sub) sub.textContent=S.sleepHours+'h slept — '+(advice.nap?'Nap: '+advice.nap:'Well rested');
@@ -1878,7 +1927,7 @@ function renderExSleep(){
   }
 
   // Exercise completion stats — count from saved week logs + today's current exercises
-  const exNames={walk:'Dog Walk',bike:'Bike Ride',weights:'Weight Training',yard:'Yard Work',carwash:'Car Wash'};
+  const exNames={walk:'Dog Walk',bike:'Bike Ride',weights:'Weight Training',yard:'Yard Work',carwash:'Car Wash',jumping_jacks:'Jumping Jacks',high_knees:'High Knees',jump_rope:'Jump Rope',burpees:'Burpees',mountain_climbers:'Mountain Climbers',squat_reach:'Squat Reach',side_steps:'Side Steps',bicycle_crunches:'Bicycle Crunches',arm_circles:'Arm Circles',wall_pushups:'Wall Push-Ups',pushups:'Push-Ups',plank:'Plank',calf_raises:'Calf Raises',lateral_lunges:'Lateral Lunges',march:'March in Place'};
   const counts={walk:0,bike:0,weights:0};
 
   // Count from saved weekly logs (exclude today — handle separately)
