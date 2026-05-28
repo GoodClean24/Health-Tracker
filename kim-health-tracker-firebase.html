@@ -816,8 +816,15 @@ async function loadFromFirebase(){
   
   // Load menu
   const menuDoc=await fbGet('data','menu');
-  if(menuDoc&&menuDoc.menu) S.menu=menuDoc.menu;
-  else S.menu=DEFAULT_MENU;
+  if(menuDoc&&menuDoc.menu){
+    S.menu=menuDoc.menu;
+    // Ensure all DEFAULT_MENU sections exist with at least their default items
+    Object.keys(DEFAULT_MENU).forEach(sec=>{
+      if(!S.menu[sec]||S.menu[sec].length===0) S.menu[sec]=DEFAULT_MENU[sec];
+    });
+  } else {
+    S.menu=DEFAULT_MENU;
+  }
   
   // Load weekly progress
   const weeklyDoc=await fbGet('data','weekly');
