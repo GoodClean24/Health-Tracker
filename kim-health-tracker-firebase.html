@@ -818,9 +818,13 @@ async function loadFromFirebase(){
   const menuDoc=await fbGet('data','menu');
   if(menuDoc&&menuDoc.menu){
     S.menu=menuDoc.menu;
-    // Ensure all DEFAULT_MENU sections exist with at least their default items
+    // Merge missing items from DEFAULT_MENU by ID
     Object.keys(DEFAULT_MENU).forEach(sec=>{
-      if(!S.menu[sec]||S.menu[sec].length===0) S.menu[sec]=DEFAULT_MENU[sec];
+      if(!S.menu[sec]) S.menu[sec]=[];
+      DEFAULT_MENU[sec].forEach(defaultItem=>{
+        const exists=S.menu[sec].find(x=>x.id===defaultItem.id);
+        if(!exists) S.menu[sec].push(defaultItem);
+      });
     });
   } else {
     S.menu=DEFAULT_MENU;
