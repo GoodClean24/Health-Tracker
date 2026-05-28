@@ -2299,7 +2299,13 @@ function importData(e){
         if(dl.milkLogged!==undefined) S.milkLogged=dl.milkLogged;
         if(dl.electroLogged!==undefined) S.electroLogged=dl.electroLogged;
       }
-      persist();renderAll();
+      persist();
+      // Immediately save to Firebase so refresh doesn't wipe it
+      saveAllToFirebase().then(()=>{
+        setSaveStatus('Import saved to cloud ✓','#6ee7b7');
+        setTimeout(()=>setSaveStatus('Ready','#94a3b8'),3000);
+      });
+      renderAll();
       const msg=document.getElementById('importMsg');
       msg.textContent='Backup restored successfully!';
       msg.style.color='#6ee7b7';
