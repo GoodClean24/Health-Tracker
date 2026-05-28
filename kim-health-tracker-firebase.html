@@ -1033,27 +1033,6 @@ function renderExercises(){
 }
 
 function sortEntries(entries){
-  // Anchor order: breakfast/shakes=0, lunch=2, dinner=4, untagged=6
-  const anchor={breakfasts:0,shakes:0,lunches:2,dinners:4,untagged:6,snacks:null};
-  // Find timestamps of first breakfast, lunch, dinner to place snacks
-  const firstBreakfast=entries.filter(e=>e.mealTag==='breakfasts'||e.mealTag==='shakes').reduce((a,e)=>Math.min(a,e.timestamp||0),Infinity);
-  const firstLunch=entries.filter(e=>e.mealTag==='lunches').reduce((a,e)=>Math.min(a,e.timestamp||0),Infinity);
-  const firstDinner=entries.filter(e=>e.mealTag==='dinners').reduce((a,e)=>Math.min(a,e.timestamp||0),Infinity);
-
-  function sortVal(e){
-    const tag=e.mealTag||'untagged';
-    const ts=e.timestamp||0;
-    if(tag==='snacks'){
-      if(firstDinner!==Infinity&&ts>=firstDinner) return 4.5;
-      if(firstLunch!==Infinity&&ts>=firstLunch) return 2.5;
-      return 0.5;
-    }
-    return anchor[tag]!==null?anchor[tag]:6;
-  }
-  return [...entries].sort((a,b)=>sortVal(a)-sortVal(b)||(a.timestamp||0)-(b.timestamp||0));
-}
-
-function sortEntries(entries){
   const firstTs=(tag)=>entries.filter(e=>e.mealTag===tag).reduce((a,e)=>Math.min(a,e.timestamp||0),Infinity);
   const fB=Math.min(firstTs('breakfasts'),firstTs('shakes'));
   const fL=firstTs('lunches');
@@ -1068,7 +1047,8 @@ function sortEntries(entries){
     }
     return {breakfasts:0,shakes:0,lunches:2,dinners:4,untagged:6}[tag]??6;
   }
-  return [...entries].sort((a,b)=>sv(a)-sv(b)||(a.timestamp||0)-(b.timestamp||0));
+  // Sort by category first, then newest within each category at top
+  return [...entries].sort((a,b)=>sv(a)-sv(b)||((b.timestamp||0)-(a.timestamp||0)));
 }
 
 const TAG_LABELS={breakfasts:'Breakfast',shakes:'Breakfast',snacks:'Snack',lunches:'Lunch',dinners:'Dinner',untagged:''};
