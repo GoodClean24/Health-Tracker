@@ -857,8 +857,11 @@ async function _doLoadFromFirebase(){
       S.recoveryDismissed=daily.recoveryDismissed||false;
     }
     setSaveStatus('Loading menu...','#fbbf24');
+    const CURRENT_MENU_VERSION='v2026-05-29';
     const menuDoc=await fbGet('data','menu');
-    if(menuDoc&&menuDoc.menu){
+    const savedMenuVersion=await fbGet('data','menuVersion');
+    if(menuDoc&&menuDoc.menu&&savedMenuVersion&&savedMenuVersion.version===CURRENT_MENU_VERSION){
+      // Menu is current version — use saved menu and merge any new DEFAULT items
       S.menu=menuDoc.menu;
       Object.keys(DEFAULT_MENU).forEach(sec=>{
         if(!S.menu[sec]) S.menu[sec]=[];
@@ -867,7 +870,12 @@ async function _doLoadFromFirebase(){
           if(!exists) S.menu[sec].push(defaultItem);
         });
       });
-    } else { S.menu=DEFAULT_MENU; }
+    } else {
+      // Version mismatch or no menu — force reset to DEFAULT_MENU
+      S.menu=JSON.parse(JSON.stringify(DEFAULT_MENU));
+      await fbSave('data','menu',{menu:S.menu});
+      await fbSave('data','menuVersion',{version:CURRENT_MENU_VERSION});
+    }
     setSaveStatus('Loading progress...','#fbbf24');
     const weeklyDoc=await fbGet('data','weekly');
     if(weeklyDoc&&weeklyDoc.weekly) S.weekly=weeklyDoc.weekly;
@@ -1680,9 +1688,9 @@ function editGoalWeight(){
   if(!val||val<100||val>300) return;
   GOAL_WEIGHT=val;
   localStorage.setItem('kim_tracker_goalweight',val);
-  fbSave('data','goalweight',{goalWeight:val});
+  // Save immediately to Firebase
+  fbSave('data','goalweight',{goalWeight:val}).then(()=>showToast('Goal updated to '+val+' lbs!'));
   renderAll();
-  showToast('Goal updated to '+val+' lbs!');
 }
 
 function toggleWeightInput(){
