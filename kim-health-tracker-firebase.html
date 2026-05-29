@@ -2394,11 +2394,6 @@ window.addEventListener('load', function() {
   window.db = firebase.firestore();
   window.auth = firebase.auth();
 
-  // Enable offline persistence
-  window.db.enablePersistence({synchronizeTabs:true}).catch(function(err){
-    console.log('Persistence error:', err.code);
-  });
-
   auth.onAuthStateChanged(function(user) {
     if(user) {
       _uid = user.uid;
