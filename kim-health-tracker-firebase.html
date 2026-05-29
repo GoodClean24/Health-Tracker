@@ -827,6 +827,20 @@ function scheduleSave(){
 async function loadFromFirebase(){
   if(!_uid) return;
   setSaveStatus('Loading...','#fbbf24');
+  
+  // Timeout after 8 seconds — fall back to localStorage/defaults
+  const timeout=new Promise(resolve=>setTimeout(()=>resolve('timeout'),8000));
+  const load=_doLoadFromFirebase();
+  const result=await Promise.race([load,timeout]);
+  
+  if(result==='timeout'){
+    setSaveStatus('Offline mode','#fbbf24');
+    ensureDefaultMeals();
+    renderAll();
+  }
+}
+
+async function _doLoadFromFirebase(){
   const today=todayKey();
   
   // Load daily log for today
@@ -882,6 +896,7 @@ async function loadFromFirebase(){
   setSaveStatus('Ready','#94a3b8');
   ensureDefaultMeals();
   renderAll();
+  return 'done';
 }
 function fmt(n){return Math.round(n||0);}
 function todayKey(){return new Date().toISOString().split('T')[0];}
