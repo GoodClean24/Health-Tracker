@@ -2416,7 +2416,11 @@ window.signInWithGoogle = function() {
   document.getElementById('authStatus').textContent = 'Signing in...';
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).catch(function(err) {
-    document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
+    if(err.code==='auth/popup-blocked'||err.code==='auth/popup-closed-by-user'||/blocked/i.test(err.message)){
+      auth.signInWithRedirect(provider);
+    } else {
+      document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
+    }
   });
 };
 
