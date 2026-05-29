@@ -1372,7 +1372,7 @@ function renderMenuGuide(){
       <div style="flex:1;"><div style="font-weight:700;font-size:14px;">${item.name}${S.menuSection==='snacks'?`<span style="margin-left:8px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:${item.approved!==false?'rgba(110,231,183,0.15)':'rgba(251,191,36,0.15)'};color:${item.approved!==false?'#6ee7b7':'#fbbf24'};">${item.approved!==false?'Approved':'Treat'}</span>`:''}</div>${item.items?`<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${item.items}</div>`:''}</div>
       <div style="display:flex;gap:8px;">
         <button onclick="editMenuItem('${S.menuSection}',${idx})" style="background:none;border:1px solid #2d3748;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:11px;padding:4px 8px;">edit</button>
-        <button onclick="deleteMenuItem('${S.menuSection}',${idx})" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;">delete</button>
+        <button onclick="deleteMenuItem('${S.menuSection}','${item.id}')" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;">delete</button>
       </div>
     </div>
     <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">Per serving macros:</div>
@@ -1495,9 +1495,10 @@ function addEntryFromMenuQty(sec, itemId, inputEl){
   persist(); renderAll(); showToast('Logged!');
 }
 
-function deleteMenuItem(sec, idx){
+function deleteMenuItem(sec, itemId){
   if(!confirm('Remove this item from the menu?')) return;
-  S.menu[sec].splice(idx,1); persist(); renderMenuGuide();
+  S.menu[sec]=S.menu[sec].filter(x=>x.id!==itemId);
+  persist(); renderMenuGuide();
 }
 
 function addMenuItem(){
