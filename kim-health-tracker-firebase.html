@@ -2397,7 +2397,10 @@ window.addEventListener('load', function() {
   window.db = firebase.firestore();
   window.auth = firebase.auth();
 
-  auth.onAuthStateChanged(function(user) {
+auth.getRedirectResult().catch(function(err){
+    if(err && err.code) document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
+  });  
+ auth.onAuthStateChanged(function(user) {
     if(user) {
       _uid = user.uid;
       document.getElementById('signInScreen').style.display = 'none';
