@@ -1371,7 +1371,7 @@ function renderMenuGuide(){
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
       <div style="flex:1;"><div style="font-weight:700;font-size:14px;">${item.name}${S.menuSection==='snacks'?`<span style="margin-left:8px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:${item.approved!==false?'rgba(110,231,183,0.15)':'rgba(251,191,36,0.15)'};color:${item.approved!==false?'#6ee7b7':'#fbbf24'};">${item.approved!==false?'Approved':'Treat'}</span>`:''}</div>${item.items?`<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${item.items}</div>`:''}</div>
       <div style="display:flex;gap:8px;">
-        <button onclick="editMenuItem('${S.menuSection}',${idx})" style="background:none;border:1px solid #2d3748;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:11px;padding:4px 8px;">edit</button>
+        <button onclick="editMenuItem('${S.menuSection}','${item.id}')" style="background:none;border:1px solid #2d3748;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:11px;padding:4px 8px;">edit</button>
         <button onclick="deleteMenuItem('${S.menuSection}','${item.id}')" style="background:none;border:none;color:#f87171;cursor:pointer;font-size:11px;">delete</button>
       </div>
     </div>
@@ -1510,10 +1510,10 @@ function addMenuItem(){
   persist(); renderMenuGuide(); showToast('Added to menu!');
 }
 
-function editMenuItem(sec, idx){
-  const item=S.menu[sec][idx];
+function editMenuItem(sec, itemId){
+  const item=S.menu[sec].find(x=>x.id===itemId);
   if(!item) return;
-  S._editing={type:'menu',sec,idx};
+  S._editing={type:'menu',sec,itemId};
   document.getElementById('editItemName').value=item.name;
   document.getElementById('editItemIngredients').value=item.items||'';
   document.getElementById('editItemCal').value=item.calories||0;
@@ -1601,7 +1601,11 @@ function saveEditItem(){
   const name=document.getElementById('editItemName').value.trim();
   if(!name){ showToast('Add a name',true); return; }
   const updates={name, items:document.getElementById('editItemIngredients').value.trim(), ingredients:document.getElementById('editItemIngredients').value.trim(), calories:parseFloat(document.getElementById('editItemCal').value)||0, protein:parseFloat(document.getElementById('editItemPro').value)||0, sugar:parseFloat(document.getElementById('editItemSug').value)||0, carbs:parseFloat(document.getElementById('editItemCarb').value)||0, fat:parseFloat(document.getElementById('editItemFat').value)||0, satfat:parseFloat(document.getElementById('editItemSatFat')?.value)||0, fiber:parseFloat(document.getElementById('editItemFiber')?.value)||0};
-  if(e.type==='menu'){ S.menu[e.sec][e.idx]={...S.menu[e.sec][e.idx],...updates}; persist(); renderMenuGuide(); }
+  if(e.type==='menu'){
+    const itemToEdit=S.menu[e.sec].find(x=>x.id===e.itemId);
+    if(itemToEdit) Object.assign(itemToEdit,updates);
+    persist(); renderMenuGuide();
+  }
   else { S.saved[e.idx]={...S.saved[e.idx],...updates}; persist(); renderSavedMeals(); }
   document.getElementById('editItemModal').style.display='none';
   S._editing=null;
