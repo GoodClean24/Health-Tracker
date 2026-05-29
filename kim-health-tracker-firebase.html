@@ -325,21 +325,21 @@ input, textarea { font-family: inherit; }
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="cardioSelect" class="inp" style="flex:1;font-size:12px;">
           <option value="">Choose exercise...</option>
-     	  <option value="jumping_jacks">Jumping Jacks</option>
-          <option value="high_knees">High Knees</option>
-          <option value="jump_rope">Jump Rope / Mimic</option>
-          <option value="burpees">Modified Burpees</option>
-          <option value="mountain_climbers">Mountain Climbers</option>
-          <option value="squat_reach">Squat to Standing Reach</option>
-          <option value="side_steps">Side Step Touches</option>
-          <option value="bicycle_crunches">Standing Bicycle Crunches</option>
-          <option value="arm_circles">Arm Circles + Shoulder Rolls</option>
-          <option value="wall_pushups">Wall Push-Ups</option>
-          <option value="pushups">Push-Ups</option>
-          <option value="plank">Plank</option>
-          <option value="calf_raises">Calf Raises</option>
-          <option value="lateral_lunges">Lateral Lunges</option>
-          <option value="march">March in Place</option>
+          <option value="jumping_jacks">Jumping Jacks (aim 3-5 min)</option>
+          <option value="high_knees">High Knees (aim 3-5 min)</option>
+          <option value="jump_rope">Jump Rope / Mimic (aim 3-5 min)</option>
+          <option value="burpees">Modified Burpees (aim 2-3 min)</option>
+          <option value="mountain_climbers">Mountain Climbers (aim 2-3 min)</option>
+          <option value="squat_reach">Squat to Standing Reach (aim 3 min)</option>
+          <option value="side_steps">Side Step Touches (aim 3-5 min)</option>
+          <option value="bicycle_crunches">Standing Bicycle Crunches (aim 2-3 min)</option>
+          <option value="arm_circles">Arm Circles + Shoulder Rolls (recovery)</option>
+          <option value="wall_pushups">Wall Push-Ups (aim 2-3 min)</option>
+          <option value="pushups">Push-Ups (aim 2-3 min)</option>
+          <option value="plank">Plank (aim 1-2 min)</option>
+          <option value="calf_raises">Calf Raises (aim 2-3 min)</option>
+          <option value="lateral_lunges">Lateral Lunges (aim 2-3 min)</option>
+          <option value="march">March in Place (aim 3-5 min)</option>
         </select>
         <button class="btn-ghost" onclick="addCardio()" style="font-size:11px;padding:7px 12px;white-space:nowrap;">+ Add</button>
       </div>
@@ -678,42 +678,49 @@ const DEFAULT_MENU={
   breakfasts:[
     {id:'b0',name:"Kim's Morning Coffee",items:'12oz Peets decaf coffee, 1oz Torani vanilla syrup, 4oz Fairlife fat free milk',calories:75,protein:4,sugar:11,carbs:13,fat:0,satfat:0,fiber:0,useCount:0},
     {id:'b1',name:"Kim's Chocolate Protein Shake",items:'1.5 scoops Designer Whey Chocolate, 1 tbsp PB2, 2 tbsp plain Greek yogurt, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:325,protein:41,sugar:14,carbs:31,fat:5,satfat:1,fiber:9,notes:'Have AFTER your walk.',useCount:0},
-    {id:'b2',name:'Fried Eggs with Olive Oil Spray (2)',items:'2 fried eggs',calories:190,protein:12,sugar:0,carbs:1,fat:15,satfat:4,fiber:0,useCount:0},
-    {id:'b3',name:'Orowheat Dark Rye Toast (2)',items:'2 slices',calories:145,protein:6,sugar:0,carbs:33,fat:1,satfat:0,fiber:0,useCount:0},
-    {id:'b4',name:'Overnight Oats + Half Banana',items:'1/2 cup rolled oats, 1/2 cup Fairlife fat free milk, 1/2 cup almond milk, cinnamon, half banana, handful blueberries, 3 strawberries',calories:360,protein:18,sugar:24,carbs:65,fat:5,satfat:1,fiber:8,notes:'Mix oats and liquids, refrigerate 2+ hours. Top with fruit.',useCount:0},
-    {id:'b5',name:'Overnight Oats',items:'1/2 cup rolled oats, 1/2 cup Fairlife fat free milk, 1/2 cup almond milk, cinnamon, handful blueberries, 3 strawberries',calories:320,protein:18,sugar:14,carbs:52,fat:5,satfat:1,fiber:7,notes:'Mix oats and liquids, refrigerate 2+ hours. Top with fruit.',useCount:0},
-    
+    {id:'b2',name:'Two Fried Eggs + Sourdough + Blueberries',items:'2 fried eggs, 1 slice sourdough with thin butter, handful blueberries',calories:380,protein:15,sugar:6,carbs:32,fat:18,satfat:5,fiber:2,useCount:0},
+    {id:'b3',name:'Two Fried Eggs + Raisin Toast + Half Grapefruit',items:'2 fried eggs, 1 slice raisin toast with thin butter, half grapefruit',calories:350,protein:14,sugar:14,carbs:34,fat:16,satfat:5,fiber:3,useCount:0},
+    {id:'b4',name:'Cottage Cheese Bowl',items:'1/2 cup cottage cheese, canned peaches or pineapple in juice, handful blueberries',calories:200,protein:16,sugar:14,carbs:22,fat:2,satfat:1,fiber:1,notes:'Get fruit packed in juice not syrup.',useCount:0},
+    {id:'b8',name:'Overnight Oats + Half Banana',items:'1/2 cup rolled oats, 1/2 cup Fairlife fat free milk, 1/2 cup almond milk, cinnamon, half banana, handful blueberries, 3 strawberries',calories:360,protein:18,sugar:24,carbs:65,fat:5,satfat:1,fiber:8,notes:'Mix oats and liquids, refrigerate 2+ hours. Top with fruit.',useCount:0},
+    {id:'b7',name:'Overnight Oats',items:'1/2 cup rolled oats, 1/2 cup Fairlife fat free milk, 1/2 cup almond milk, cinnamon, handful blueberries, 3 strawberries',calories:320,protein:18,sugar:14,carbs:52,fat:5,satfat:1,fiber:7,notes:'Mix oats and liquids, refrigerate 2+ hours. Top with fruit.',useCount:0},
+    {id:'b8',name:'Overnight Oats + Half Banana',items:'1/2 cup rolled oats, 1/2 cup Fairlife fat free milk, 1/2 cup almond milk, cinnamon, half banana, handful blueberries, 3 strawberries',calories:360,protein:18,sugar:24,carbs:65,fat:5,satfat:1,fiber:8,notes:'Mix oats and liquids, refrigerate 2+ hours. Top with fruit.',useCount:0},
+    {id:'b6',name:'Two Fried Eggs + Dark Rye + Half Grapefruit',items:'2 fried eggs, 1 slice Oroweat Schwarzwalder Rye, light butter, half grapefruit',calories:340,protein:15,sugar:8,carbs:28,fat:16,satfat:4,fiber:3,useCount:0},
+    {id:'b5',name:'Egg and Fruit Bowl',items:'2 hard boiled eggs, banana or apple, small handful almonds',calories:310,protein:16,sugar:14,carbs:24,fat:16,satfat:3,fiber:4,useCount:0},
   ],
   snacks:[
-    {id:'s1',name:'Air Popped Popcorn',items:'1 cup air popped popcorn, drizzle olive oil, lite Himalayan salt',calories:155,protein:3,sugar:0,carbs:24,fat:7,satfat:1,fiber:5,useCount:0},
-    {id:'s2',name:'Rice Cake + Natural Peanut Butter',items:'1 rice cake, 1 tbsp natural peanut butter',calories:185,protein:5,sugar:1,carbs:18,fat:9,satfat:1,fiber:1,notes:'Add string cheese for more protein.'useCount:0},
+    {id:'s1',name:'Air Popped Popcorn + String Cheese',items:'1 cup air popped popcorn, drizzle olive oil, lite Himalayan salt, 1 string cheese',calories:150,protein:7,sugar:1,carbs:13,fat:7,satfat:3,fiber:1,approved:true,useCount:0},
+    {id:'s2',name:'Rice Cake + Natural Peanut Butter + Strawberries',items:'1 rice cake, 1 tbsp natural peanut butter, handful strawberries',calories:185,protein:5,sugar:6,carbs:22,fat:9,satfat:1,fiber:3,approved:true,useCount:0},
     {id:'s3',name:'Hard Boiled Egg + Apple',items:'1 hard boiled egg, 1 medium apple',calories:155,protein:7,sugar:16,carbs:22,fat:5,satfat:1,fiber:4,approved:true,useCount:0},
-    {id:'s4',name:'String Cheese (1)',calories:80,protein:7,sugar:0,carbs:1,fat:5,satfat:3,fiber:0,useCount:0},
-    {id:'s5',name:'Ghiradelli 72% Dark Chocolate (2 squares)',calories:120,protein:2,sugar:9,carbs:13,fat:9,satfat:5,fiber:2,useCount:0},
-    {id:'s6',name:'Fairlife Chocolate Milk - Post Walk Recovery',items:'1 cup Fairlife chocolate milk',calories:140,protein:13,sugar:12,carbs:20,fat:2,satfat:1,fiber:0,useCount:0},
-    {id:'s7',name:'Greek Yogurt + Honey',items:'1/2 cup plain nonfat Greek yogurt, drizzle of honey',calories:120,protein:12,sugar:10,carbs:15,fat:0,satfat:0,fiber:0,useCount:0},
+    {id:'s4',name:'Almonds + Pear',items:'small handful sea salt almonds, 1 medium pear',calories:195,protein:4,sugar:12,carbs:26,fat:10,satfat:1,fiber:6,approved:true,useCount:0},
+    {id:'s5',name:'String Cheese + Blueberries',items:'1 string cheese, handful blueberries',calories:110,protein:7,sugar:7,carbs:11,fat:5,satfat:3,fiber:2,approved:true,useCount:0},
+    {id:'s6',name:'Fairlife Chocolate Milk - Post Walk Recovery',items:'1 cup Fairlife chocolate milk',calories:140,protein:13,sugar:12,carbs:20,fat:2,satfat:1,fiber:0,approved:true,notes:'Drink right after your walk.',useCount:0},
+    {id:'s7',name:'Greek Yogurt + Honey',items:'1/2 cup plain nonfat Greek yogurt, drizzle of honey',calories:120,protein:12,sugar:10,carbs:15,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
     {id:'s8',name:'Cottage Cheese + Pineapple',items:'1/2 cup cottage cheese, few pineapple chunks',calories:130,protein:14,sugar:10,carbs:15,fat:1,satfat:0,fiber:1,approved:true,useCount:0},
-    {id:'s9',name:'Dove Dark Chocolate + Almonds',items:'1 piece Dove dark chocolate with almonds',calories:80,protein:1,sugar:6,carbs:8,fat:5,satfat:2,fiber:1,useCount:0},
+    {id:'s9',name:'Dove Dark Chocolate + Almonds',items:'1 piece Dove dark chocolate with almonds',calories:80,protein:1,sugar:6,carbs:8,fat:5,satfat:2,fiber:1,approved:true,notes:'Your treat. Eat slowly.',useCount:0},
     {id:'s10',name:'Turkey Sausage Bite + Colby Cheese Cube',items:'1 turkey sausage bite, 1 cubed Colby cheese',calories:85,protein:7,sugar:0,carbs:1,fat:5,satfat:2,fiber:0,approved:true,useCount:0},
-    {id:'s11',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
-    {id:'s12',name:'Blue Diamond Lightly Salted Almonds',items:'small handful Blue Diamond lightly salted almonds (~23)',calories:160,protein:6,sugar:1,carbs:6,fat:14,satfat:1,fiber:4,useCount:0},
-    {id:'s13',name:'Dark Rye + Natural Peanut Butter',items:'1 slice Oroweat Dark Rye, 1 tbsp natural peanut butter',calories:165,protein:6,sugar:1,carbs:17,fat:6,satfat:1,fiber:2,useCount:0},
-  
+    {id:'s11b',name:'Baby Carrot (1)',items:'1 baby carrot',calories:4,protein:0,sugar:1,carbs:1,fat:0,satfat:0,fiber:0,approved:true,useCount:0},
+    {id:'s13',name:'Blue Diamond Lightly Salted Almonds',items:'small handful Blue Diamond lightly salted almonds (~23)',calories:160,protein:6,sugar:1,carbs:6,fat:14,satfat:1,fiber:4,approved:true,useCount:0},
+    {id:'s14',name:'Dark Rye + Natural Peanut Butter',items:'1 slice Oroweat Schwarzwalder Rye, 1 tbsp natural peanut butter',calories:165,protein:6,sugar:1,carbs:17,fat:6,satfat:1,fiber:2,approved:true,useCount:0},
+    {id:'s12',name:'Oatmeal Raisin Cookie (1 large)',calories:200,protein:3,sugar:18,carbs:30,fat:8,satfat:2,fiber:1,approved:false,useCount:0},
   ],
   lunches:[
     {id:'l0_innout',name:"In-N-Out Double Double Protein Style, One Cheese, Light Spread + Fries",items:'Double double protein style, one cheese, light spread, regular fries, unsweetened iced tea',calories:915,protein:44,sugar:12,carbs:65,fat:59,satfat:18,fiber:3,useCount:0},
-    {id:'l1',name:'Turkey Patty + Pepperoncinis',items:'Turkey patty, pepperoncini',calories:175,protein:22,sugar:1,carbs:3,fat:8,satfat:2,fiber:1,useCount:0},
-    {id:'l2',name:'PB&J on Dark Rye',items:'2 slices Oroweat Dark Rye, 1 tbsp Smuckers Natural PB, 1 tbsp apricot preserves',calories:410,protein:12,sugar:11,carbs:57,fat:11,satfat:2,fiber:4,useCount:0},
-    {id:'l3',name:'Starrkist Lemon Pepper Tuna + Mayo',items:,calories:230,protein:14,sugar:1,carbs:2,fat:17,satfat:3,fiber:0,useCount:0},
-    {id:'l4',name:'Starrkist Deli Style Tuna Salad + Mayo',items:,calories:180,protein:14,sugar:1,carbs:3,fat:12,satfat:2,fiber:0,useCount:0},
-    {id:'l5',name:'Caprese Plate',items:'1 tomato + 2 slices fresh mozzarella + balsamic vinaigrette',calories:260,protein:12,sugar:6,carbs:12,fat:18,satfat:7,fiber:2,useCount:0},
+    {id:'l1',name:'Turkey Patty + Pepperoncinis + Rice + Tomato + Avocado',items:'Turkey patty, pepperoncinis, 1/2 cup rice, sliced tomato, avocado, oil and vinegar',calories:420,protein:28,sugar:3,carbs:32,fat:16,satfat:3,fiber:5,useCount:0},
+    {id:'l2',name:'Grilled Chicken + Steamed Broccoli + Rice',items:'4oz chicken breast, 1 cup steamed broccoli, 1/2 cup rice',calories:380,protein:38,sugar:2,carbs:34,fat:6,satfat:1,fiber:4,useCount:0},
+    {id:'l3',name:'Salmon + Roasted Zucchini + Half Baked Potato',items:'4oz salmon, roasted zucchini, half baked potato, butter, sour cream',calories:420,protein:32,sugar:3,carbs:28,fat:16,satfat:4,fiber:4,useCount:0},
+    {id:'l5',name:"PB&J on Dark Rye",items:'2 slices Oroweat Schwarzwalder Rye, 1 tbsp Smuckers Natural PB, 1 tbsp apricot preserves',calories:410,protein:12,sugar:11,carbs:57,fat:11,satfat:2,fiber:4,useCount:0},
+    {id:'l4',name:'Caprese Plate',items:'1 tomato, 2 slices fresh mozzarella, olive oil, light balsamic vinaigrette',calories:260,protein:12,sugar:6,carbs:10,fat:18,satfat:7,fiber:2,useCount:0},
   ],
   dinners:[
     {id:'d0_spag',name:'Homemade Turkey Spaghetti (2 cups)',items:'Ground turkey, Trader Joes creamy spaghetti sauce, white spaghetti noodles',calories:620,protein:38,sugar:14,carbs:72,fat:16,satfat:4,fiber:5,useCount:0},
-    {id:'d1_spag',name:'Just Bare Chicken Strips (2 pieces)',items:,calories:150,protein:16,sugar:10,carbs:10,fat:5,satfat:1,fiber:0,useCount:0},
-    {id:'d2',name:'Just Bare Chicken Bites Salad + Beets + Chickpeas',items:'Just Bare breaded chicken bites, iceberg, beets, chickpeas, 2 tbsp Olive Garden dressing',calories:420,protein:28,sugar:6,carbs:38,fat:16,satfat:2,fiber:7,useCount:0},
-    {id:'d3',name:'Ground Turkey Taco Bowl',items:'ground turkey, black beans, tomato, avocado, sour cream, tortilla strips, hot sauce',calories:520,protein:34,sugar:4,carbs:42,fat:20,satfat:5,fiber:8,useCount:0},
-    {id:'d4',name:'Homemade Turkey Chili (2 cups)',items:'Ground turkey, black beans, kidney beans, crushed tomatoes, carrots, chicken broth, garlic powder, onion powder, basil, oregano',calories:380,protein:32,sugar:8,carbs:42,fat:8,satfat:2,fiber:12,notes:'Makes ~5 servings. High fiber — great for LDL.',useCount:0},
+    {id:'d1',name:'Chicken Breast + Steamed Broccoli + Rice',items:'grilled chicken breast, steamed broccoli, 1/2 cup rice',calories:420,protein:42,sugar:2,carbs:36,fat:7,satfat:1,fiber:4,useCount:0},
+    {id:'d2',name:'Chicken Breast + Steamed Vegetable + Yam',items:'grilled chicken breast, steamed broccoli, medium yam',calories:430,protein:40,sugar:8,carbs:42,fat:6,satfat:1,fiber:7,useCount:0},
+    {id:'d3',name:'Just Bare Chicken Strips + Steamed Vegetable + Rice',items:'Just Bare Fully Cooked Lightly Breaded Chicken Breast Strips, steamed vegetable, 1/2 cup rice',calories:450,protein:32,sugar:2,carbs:42,fat:12,satfat:2,fiber:3,useCount:0},
+    {id:'d4',name:'Just Bare Chicken Bites Salad + Beets + Chickpeas',items:'Just Bare breaded chicken bites, iceberg, beets, chickpeas, 2 tbsp Olive Garden dressing',calories:420,protein:28,sugar:6,carbs:38,fat:16,satfat:2,fiber:7,useCount:0},
+    {id:'d5',name:'Baked Salmon + Green Beans + Baked Potato',items:'5oz salmon, steamed green beans, small baked potato, butter, sour cream',calories:480,protein:38,sugar:4,carbs:34,fat:16,satfat:4,fiber:6,useCount:0},
+    {id:'d6',name:'Ground Turkey Taco Bowl',items:'ground turkey, black beans, tomato, avocado, sour cream, tortilla strips, hot sauce',calories:520,protein:34,sugar:4,carbs:42,fat:20,satfat:5,fiber:8,useCount:0},
+    {id:'d8',name:'Homemade Turkey Chili (2 cups)',items:'Ground turkey, black beans, kidney beans, crushed tomatoes, carrots, chicken broth, garlic powder, onion powder, basil, oregano',calories:380,protein:32,sugar:8,carbs:42,fat:8,satfat:2,fiber:12,notes:'Makes ~5 servings. High fiber — great for LDL.',useCount:0},
+    {id:'d7',name:'Quinoa + Peas and Carrots + Chicken',items:'1/2 cup quinoa with frozen peas and carrots, grilled chicken breast',calories:400,protein:38,sugar:4,carbs:34,fat:6,satfat:1,fiber:6,useCount:0},
   ],
   shakes:[
     {id:'sh1',name:"Kim's Chocolate Protein Shake",items:'1.5 scoops Designer Whey Chocolate, 1 tbsp PB2, 2 tbsp plain Greek yogurt, 4oz almond milk, 4oz Fairlife fat free milk, handful spinach, 3 frozen strawberries, small handful frozen blueberries',calories:325,protein:41,sugar:14,carbs:31,fat:5,satfat:1,fiber:9,notes:'After your walk.',useCount:0},
@@ -2397,13 +2404,7 @@ window.addEventListener('load', function() {
   window.db = firebase.firestore();
   window.auth = firebase.auth();
 
-auth.getRedirectResult().catch(function(err){
-    if(err && err.code) document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
-  });  
-auth.getRedirectResult().catch(function(err){
-    if(err && err.code) document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
-  }); 
-auth.onAuthStateChanged(function(user) {
+  auth.onAuthStateChanged(function(user) {
     if(user) {
       _uid = user.uid;
       document.getElementById('signInScreen').style.display = 'none';
@@ -2411,22 +2412,28 @@ auth.onAuthStateChanged(function(user) {
       document.getElementById('userEmail').textContent = user.email || user.displayName || 'Signed in';
       loadFromFirebase();
     } else {
-      document.getElementById('signInScreen').style.display = 'flex';
-      document.getElementById('userBar').style.display = 'none';
-      _uid = null;
+      // Check for redirect result first
+      auth.getRedirectResult().then(function(result) {
+        if(result && result.user) {
+          // onAuthStateChanged will fire with the user
+        } else {
+          document.getElementById('signInScreen').style.display = 'flex';
+          document.getElementById('userBar').style.display = 'none';
+          _uid = null;
+        }
+      }).catch(function(err) {
+        document.getElementById('signInScreen').style.display = 'flex';
+        document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
+      });
     }
   });
 });
 
 window.signInWithGoogle = function() {
-  document.getElementById('authStatus').textContent = 'Signing in...';
+  document.getElementById('authStatus').textContent = 'Redirecting to Google...';
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(function(err) {
-    if(err.code==='auth/popup-blocked'||err.code==='auth/popup-closed-by-user'||/blocked/i.test(err.message)){
-      auth.signInWithRedirect(provider);
-    } else {
-      document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
-    }
+  auth.signInWithRedirect(provider).catch(function(err) {
+    document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
   });
 };
 
