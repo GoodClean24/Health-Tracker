@@ -841,63 +841,60 @@ async function loadFromFirebase(){
 }
 
 async function _doLoadFromFirebase(){
-  const today=todayKey();
-  
-  // Load daily log for today
-  const daily=await fbGet('daily',today);
-  if(daily){
-    S.entries=daily.entries||[];
-    S.exercises=daily.exercises||[];
-    S.steps=daily.steps||'';
-    S.waterCups=daily.waterCups||0;
-    S.milkLogged=daily.milkLogged||false;
-    S.electroLogged=daily.electroLogged||false;
-    S.sleepHours=daily.sleepHours||7;
-    S.sleepLogged=daily.sleepLogged||false;
-    S.recoveryDismissed=daily.recoveryDismissed||false;
-  }
-  
-  // Load menu
-  const menuDoc=await fbGet('data','menu');
-  if(menuDoc&&menuDoc.menu){
-    S.menu=menuDoc.menu;
-    // Merge missing items from DEFAULT_MENU by ID
-    Object.keys(DEFAULT_MENU).forEach(sec=>{
-      if(!S.menu[sec]) S.menu[sec]=[];
-      DEFAULT_MENU[sec].forEach(defaultItem=>{
-        const exists=S.menu[sec].find(x=>x.id===defaultItem.id);
-        if(!exists) S.menu[sec].push(defaultItem);
+  try {
+    setSaveStatus('Loading daily...','#fbbf24');
+    const today=todayKey();
+    const daily=await fbGet('daily',today);
+    if(daily){
+      S.entries=daily.entries||[];
+      S.exercises=daily.exercises||[];
+      S.steps=daily.steps||'';
+      S.waterCups=daily.waterCups||0;
+      S.milkLogged=daily.milkLogged||false;
+      S.electroLogged=daily.electroLogged||false;
+      S.sleepHours=daily.sleepHours||7;
+      S.sleepLogged=daily.sleepLogged||false;
+      S.recoveryDismissed=daily.recoveryDismissed||false;
+    }
+    setSaveStatus('Loading menu...','#fbbf24');
+    const menuDoc=await fbGet('data','menu');
+    if(menuDoc&&menuDoc.menu){
+      S.menu=menuDoc.menu;
+      Object.keys(DEFAULT_MENU).forEach(sec=>{
+        if(!S.menu[sec]) S.menu[sec]=[];
+        DEFAULT_MENU[sec].forEach(defaultItem=>{
+          const exists=S.menu[sec].find(x=>x.id===defaultItem.id);
+          if(!exists) S.menu[sec].push(defaultItem);
+        });
       });
-    });
-  } else {
-    S.menu=DEFAULT_MENU;
+    } else { S.menu=DEFAULT_MENU; }
+    setSaveStatus('Loading progress...','#fbbf24');
+    const weeklyDoc=await fbGet('data','weekly');
+    if(weeklyDoc&&weeklyDoc.weekly) S.weekly=weeklyDoc.weekly;
+    const weightsDoc=await fbGet('data','weights');
+    if(weightsDoc&&weightsDoc.weights) S.weights=weightsDoc.weights;
+    const bwDoc=await fbGet('data','bloodwork');
+    if(bwDoc&&bwDoc.bloodwork) S.bloodwork=bwDoc.bloodwork;
+    const sleepDoc=await fbGet('data','sleep');
+    if(sleepDoc&&sleepDoc.date===today){
+      S.sleepHours=sleepDoc.sleepHours||7;
+      S.sleepLogged=sleepDoc.sleepLogged||false;
+    }
+    const gwDoc=await fbGet('data','goalweight');
+    if(gwDoc&&gwDoc.goalWeight) GOAL_WEIGHT=gwDoc.goalWeight;
+    setSaveStatus('Ready','#94a3b8');
+    ensureDefaultMeals();
+    renderAll();
+    return 'done';
+  } catch(e) {
+    setSaveStatus('Load error: '+e.message,'#f87171');
+    console.error('Load error:',e);
+    ensureDefaultMeals();
+    renderAll();
+    return 'error';
   }
-  
-  // Load weekly progress
-  const weeklyDoc=await fbGet('data','weekly');
-  if(weeklyDoc&&weeklyDoc.weekly) S.weekly=weeklyDoc.weekly;
-  
-  // Load weights
-  const weightsDoc=await fbGet('data','weights');
-  if(weightsDoc&&weightsDoc.weights) S.weights=weightsDoc.weights;
-  
-  // Load bloodwork
-  const bwDoc=await fbGet('data','bloodwork');
-  if(bwDoc&&bwDoc.bloodwork) S.bloodwork=bwDoc.bloodwork;
-  
-  // Load sleep separately (immediate save)
-  const sleepDoc=await fbGet('data','sleep');
-  if(sleepDoc&&sleepDoc.date===dk){
-    S.sleepHours=sleepDoc.sleepHours||7;
-    S.sleepLogged=sleepDoc.sleepLogged||false;
-  }
-  if(gwDoc&&gwDoc.goalWeight) GOAL_WEIGHT=gwDoc.goalWeight;
-  
-  setSaveStatus('Ready','#94a3b8');
-  ensureDefaultMeals();
-  renderAll();
-  return 'done';
 }
+
 function fmt(n){return Math.round(n||0);}
 function todayKey(){return new Date().toISOString().split('T')[0];}
 function getDayName(){return new Date().toLocaleDateString('en-US',{weekday:'long'});}
