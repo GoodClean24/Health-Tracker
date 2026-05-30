@@ -668,7 +668,7 @@ const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3.3,
   wall_pushups:5,pushups:7,calf_raises:5,lateral_lunges:7,march:6,plank:4};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
-const MENU_VERSION='v2026-05-25f';
+const MENU_VERSION='v2026-05-30a';
 const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
@@ -686,7 +686,7 @@ const DEFAULT_MENU={
   ],
   snacks:[
     {id:'s1',name:'Air Popped Popcorn',items:'1 cup air popped popcorn, drizzle olive oil, lite Himalayan salt',calories:155,protein:3,sugar:0,carbs:24,fat:7,satfat:1,fiber:5,useCount:0},
-    {id:'s2',name:'Rice Cake + Natural Peanut Butter',items:'1 rice cake, 1 tbsp natural peanut butter',calories:185,protein:5,sugar:1,carbs:18,fat:9,satfat:1,fiber:1,notes:'Add string cheese for more protein.'useCount:0},
+    {id:'s2',name:'Rice Cake + Natural Peanut Butter',items:'1 rice cake, 1 tbsp natural peanut butter',calories:185,protein:5,sugar:1,carbs:18,fat:9,satfat:1,fiber:1,notes:'Add string cheese for more protein.',useCount:0},
     {id:'s3',name:'Hard Boiled Egg + Apple',items:'1 hard boiled egg, 1 medium apple',calories:155,protein:7,sugar:16,carbs:22,fat:5,satfat:1,fiber:4,approved:true,useCount:0},
     {id:'s4',name:'String Cheese (1)',calories:80,protein:7,sugar:0,carbs:1,fat:5,satfat:3,fiber:0,useCount:0},
     {id:'s5',name:'Ghiradelli 72% Dark Chocolate (2 squares)',calories:120,protein:2,sugar:9,carbs:13,fat:9,satfat:5,fiber:2,useCount:0},
@@ -705,12 +705,12 @@ const DEFAULT_MENU={
     {id:'l1',name:'Turkey Patty + Pepperoncinis',items:'Turkey patty, pepperoncini',calories:175,protein:22,sugar:1,carbs:3,fat:8,satfat:2,fiber:1,useCount:0},
     {id:'l2',name:'PB&J on Dark Rye',items:'2 slices Oroweat Dark Rye, 1 tbsp Smuckers Natural PB, 1 tbsp apricot preserves',calories:410,protein:12,sugar:11,carbs:57,fat:11,satfat:2,fiber:4,useCount:0},
     {id:'l3',name:'Starrkist Lemon Pepper Tuna + Mayo',items:,calories:230,protein:14,sugar:1,carbs:2,fat:17,satfat:3,fiber:0,useCount:0},
-    {id:'l4',name:'Starrkist Deli Style Tuna Salad + Mayo',items:,calories:180,protein:14,sugar:1,carbs:3,fat:12,satfat:2,fiber:0,useCount:0},
+    {id:'l4',name:'Starrkist Deli Style Tuna Salad + Mayo',items:'Starrkist Lemon Pepper tuna pouch, mayo',calories:230,calories:180,protein:14,sugar:1,carbs:3,fat:12,satfat:2,fiber:0,useCount:0},
     {id:'l5',name:'Caprese Plate',items:'1 tomato + 2 slices fresh mozzarella + balsamic vinaigrette',calories:260,protein:12,sugar:6,carbs:12,fat:18,satfat:7,fiber:2,useCount:0},
   ],
   dinners:[
     {id:'d0_spag',name:'Homemade Turkey Spaghetti (2 cups)',items:'Ground turkey, Trader Joes creamy spaghetti sauce, white spaghetti noodles',calories:620,protein:38,sugar:14,carbs:72,fat:16,satfat:4,fiber:5,useCount:0},
-    {id:'d1_spag',name:'Just Bare Chicken Strips (2 pieces)',items:,calories:150,protein:16,sugar:10,carbs:10,fat:5,satfat:1,fiber:0,useCount:0},
+    {id:'d1_spag',name:'Just Bare Chicken Strips (2 pieces)',items:'Just Bare chicken strips',calories:150,protein:16,sugar:10,carbs:10,fat:5,satfat:1,fiber:0,useCount:0},
     {id:'d2',name:'Just Bare Chicken Bites Salad + Beets + Chickpeas',items:'Just Bare breaded chicken bites, iceberg, beets, chickpeas, 2 tbsp Olive Garden dressing',calories:420,protein:28,sugar:6,carbs:38,fat:16,satfat:2,fiber:7,useCount:0},
     {id:'d3',name:'Ground Turkey Taco Bowl',items:'ground turkey, black beans, tomato, avocado, sour cream, tortilla strips, hot sauce',calories:520,protein:34,sugar:4,carbs:42,fat:20,satfat:5,fiber:8,useCount:0},
     {id:'d4',name:'Homemade Turkey Chili (2 cups)',items:'Ground turkey, black beans, kidney beans, crushed tomatoes, carrots, chicken broth, garlic powder, onion powder, basil, oregano',calories:380,protein:32,sugar:8,carbs:42,fat:8,satfat:2,fiber:12,notes:'Makes ~5 servings. High fiber — great for LDL.',useCount:0},
