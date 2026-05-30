@@ -850,7 +850,7 @@ async function _doLoadFromFirebase(){
       S.recoveryDismissed=daily.recoveryDismissed||false;
     }
     setSaveStatus('Loading menu...','#fbbf24');
-    const CURRENT_MENU_VERSION='v2026-05-29';
+ const CURRENT_MENU_VERSION='v2026-05-30b';
     const menuDoc=await fbGet('data','menu');
     const savedMenuVersion=await fbGet('data','menuVersion');
     if(menuDoc&&menuDoc.menu&&savedMenuVersion&&savedMenuVersion.version===CURRENT_MENU_VERSION){
