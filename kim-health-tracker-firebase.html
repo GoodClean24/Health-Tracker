@@ -1627,9 +1627,9 @@ function toggleExtraMacros(){
   const open=panel.style.display==='none';
   panel.style.display=open?'block':'none';
   btn.textContent=open?'Hide Sugar & Sodium':'Show Sugar & Sodium';
-  // Save preference per user
   if(window._uid) fbSave('data','extraMacrosPref',{show:open});
   localStorage.setItem('ht_extraMacros',open?'1':'0');
+  renderAll();
 }
 
 function restoreExtraMacrosPref(){
