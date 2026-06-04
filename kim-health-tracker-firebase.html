@@ -41,7 +41,7 @@ input, textarea { font-family: inherit; }
 <!-- Sign In Screen -->
 <div id="signInScreen">
   <div style="width:60px;height:60px;background:rgba(110,231,183,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;">💪</div>
-  <h1>Kim's Health Tracker</h1>
+  <h1>Health Tracker</h1>
   <p>Sign in with your Google account to save your data securely to the cloud.</p>
   <button id="signInBtn" onclick="signInWithGoogle()">
     <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.31z"/></svg>
@@ -177,7 +177,7 @@ input, textarea { font-family: inherit; }
       <div style="width:7px;height:7px;border-radius:50%;background:#6ee7b7;box-shadow:0 0 8px #6ee7b7;"></div>
       <span style="font-size:10px;letter-spacing:3px;color:#6ee7b7;font-weight:700;text-transform:uppercase;">Health Tracker</span>
     </div>
-    <h1 style="margin:0 0 1px;font-size:24px;font-weight:800;color:#fff;">Kim's Plan</h1>
+    <h1 style="margin:0 0 1px;font-size:24px;font-weight:800;color:#fff;">Health Plan</h1>
     <p style="margin:0 0 4px;color:#94a3b8;font-size:12px;">1,600 cal · 110g protein · 10 lbs in 6 months</p>
     <p id="dayBadge" style="margin:0 0 16px;color:#6ee7b7;font-size:10px;font-weight:600;"></p>
     <div style="display:flex;overflow-x:auto;gap:0;" id="tabBar"></div>
@@ -211,9 +211,12 @@ input, textarea { font-family: inherit; }
         <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Carbs (g)</label><input class="inp" type="number" id="manualCarb" placeholder="0" /></div>
         <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Fat (g)</label><input class="inp" type="number" id="manualFat" placeholder="0" /></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
         <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Sat Fat (g)</label><input class="inp" type="number" id="manualSatFat" placeholder="0" /></div>
         <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Fiber (g)</label><input class="inp" type="number" id="manualFiber" placeholder="0" /></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Sodium (mg)</label><input class="inp" type="number" id="manualSodium" placeholder="0" /></div>
       </div>
       <div style="margin-bottom:12px;">
         <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:6px;">Quantity (servings)</label>
@@ -241,7 +244,7 @@ input, textarea { font-family: inherit; }
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:14px;">
+  <div class="card" style="margin-bottom:14px;display:none;">
     <div onclick="toggleSleep()" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
       <div><div style="font-weight:700;font-size:15px;">Last Night's Sleep</div><div id="sleepSubtitle" style="font-size:11px;color:#94a3b8;margin-top:2px;">Tap to log</div></div>
       <div id="sleepArrow" style="font-size:20px;color:#6ee7b7;">+</div>
@@ -273,10 +276,14 @@ input, textarea { font-family: inherit; }
     </div>
     <div id="macroBarProtein"></div>
     <div id="macroBarCalories"></div>
-    <div id="macroBarSugar" style="display:none;"></div>
     <div id="macroBarCarbs"></div>
     <div id="macroBarSatFat"></div>
     <div id="macroBarFiber"></div>
+    <div id="extraMacroPanel" style="display:none;">
+      <div id="macroBarSugar"></div>
+      <div id="macroBarSodium"></div>
+    </div>
+    <button id="extraMacroToggle" onclick="toggleExtraMacros()" style="margin-top:8px;width:100%;background:none;border:1px solid #2d3748;border-radius:8px;padding:6px;font-size:11px;color:#94a3b8;cursor:pointer;font-family:inherit;">Show Sugar & Sodium</button>
   </div>
 
   <div class="card" id="deficitCard">
@@ -324,22 +331,19 @@ input, textarea { font-family: inherit; }
       <div style="font-size:11px;color:#6ee7b7;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Cardio Burst</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="cardioSelect" class="inp" style="flex:1;font-size:12px;">
-          <option value="">Choose exercise...</option>
-          <option value="jumping_jacks">Jumping Jacks (aim 3-5 min)</option>
-          <option value="high_knees">High Knees (aim 3-5 min)</option>
-          <option value="jump_rope">Jump Rope / Mimic (aim 3-5 min)</option>
-          <option value="burpees">Modified Burpees (aim 2-3 min)</option>
-          <option value="mountain_climbers">Mountain Climbers (aim 2-3 min)</option>
-          <option value="squat_reach">Squat to Standing Reach (aim 3 min)</option>
-          <option value="side_steps">Side Step Touches (aim 3-5 min)</option>
-          <option value="bicycle_crunches">Standing Bicycle Crunches (aim 2-3 min)</option>
-          <option value="arm_circles">Arm Circles + Shoulder Rolls (recovery)</option>
-          <option value="wall_pushups">Wall Push-Ups (aim 2-3 min)</option>
-          <option value="pushups">Push-Ups (aim 2-3 min)</option>
-          <option value="plank">Plank (aim 1-2 min)</option>
-          <option value="calf_raises">Calf Raises (aim 2-3 min)</option>
-          <option value="lateral_lunges">Lateral Lunges (aim 2-3 min)</option>
-          <option value="march">March in Place (aim 3-5 min)</option>
+          <option value="jumping_jacks">Jumping Jacks</option>
+          <option value="high_knees">High Knees</option>
+          <option value="jump_rope">Jump Rope / Mimic</option>
+          <option value="burpees">Modified Burpees</option>
+          <option value="mountain_climbers">Mountain Climbers</option>
+          <option value="squat_reach">Squat to Standing Reach</option>
+          <option value="side_steps">Side Step Touches</option>
+          <option value="bicycle_crunches">Standing Bicycle Crunches</option>
+          <option value="arm_circles">Arm Circles + Shoulder Rolls</option>
+          <option value="wall_pushups">Wall Push-Ups</option>
+          <option value="pushups">Push-Ups</option>
+          <option value="plank">Plank</option>
+          <option value="calf_raises">Calf Raises</option>
         </select>
         <button class="btn-ghost" onclick="addCardio()" style="font-size:11px;padding:7px 12px;white-space:nowrap;">+ Add</button>
       </div>
@@ -960,7 +964,7 @@ function persist(){
   scheduleSave();
 }
 
-function totals(){return S.entries.reduce((a,e)=>({calories:a.calories+(e.calories||0),protein:a.protein+(e.protein||0),sugar:a.sugar+(e.sugar||0),carbs:a.carbs+(e.carbs||0),fat:a.fat+(e.fat||0),satfat:a.satfat+(e.satfat||0),fiber:a.fiber+(e.fiber||0)}),{calories:0,protein:0,sugar:0,carbs:0,fat:0,satfat:0,fiber:0});}
+function totals(){return S.entries.reduce((a,e)=>({calories:a.calories+(e.calories||0),protein:a.protein+(e.protein||0),sugar:a.sugar+(e.sugar||0),carbs:a.carbs+(e.carbs||0),fat:a.fat+(e.fat||0),satfat:a.satfat+(e.satfat||0),fiber:a.fiber+(e.fiber||0),sodium:(a.sodium||0)+(e.sodium||0)}),{calories:0,protein:0,sugar:0,carbs:0,fat:0,satfat:0,fiber:0});}
 function stepsBurned(){return Math.round((parseInt(S.steps)||0)*0.04);}
 function exBurned(){return S.exercises.reduce((a,ex)=>a+(ex.burned||0),0);}
 function totalBurned(){return stepsBurned()+exBurned();}
@@ -1024,10 +1028,14 @@ function renderAll(){
 
   macroBar('macroBarProtein','Protein',t.protein,GOALS.protein,'g',false);
   macroBar('macroBarCalories','Calories',t.calories,GOALS.calories,' kcal',false);
-  // macroBar('macroBarSugar','Sugar',t.sugar,GOALS.sugar,'g',true); // hidden
   macroBar('macroBarCarbs','Carbs',t.carbs,GOALS.carbs,'g',false);
   macroBar('macroBarSatFat','Sat Fat',t.satfat,GOALS.satfat,'g',true);
   macroBar('macroBarFiber','Fiber',t.fiber,GOALS.fiber,'g',false);
+  const extraPanel=document.getElementById('extraMacroPanel');
+  if(extraPanel&&extraPanel.style.display!=='none'){
+    macroBar('macroBarSugar','Sugar',t.sugar,GOALS.sugar,'g',true);
+    if(document.getElementById('macroBarSodium')) macroBar('macroBarSodium','Sodium',t.sodium||0,2300,' mg',true);
+  }
 
   const cu=caloriesUnderGoal(), td=totalDeficit();
   const tdColor=td>=500?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
@@ -1613,6 +1621,26 @@ function saveEditItem(){
   showToast('Updated!');
 }
 
+function toggleExtraMacros(){
+  const panel=document.getElementById('extraMacroPanel');
+  const btn=document.getElementById('extraMacroToggle');
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  btn.textContent=open?'Hide Sugar & Sodium':'Show Sugar & Sodium';
+  // Save preference per user
+  if(window._uid) fbSave('data','extraMacrosPref',{show:open});
+  localStorage.setItem('ht_extraMacros',open?'1':'0');
+}
+
+function restoreExtraMacrosPref(){
+  const pref=localStorage.getItem('ht_extraMacros');
+  if(pref==='1'){
+    const panel=document.getElementById('extraMacroPanel');
+    const btn=document.getElementById('extraMacroToggle');
+    if(panel) panel.style.display='block';
+    if(btn) btn.textContent='Hide Sugar & Sodium';
+  }
+}
 function changeWater(d){S.waterCups=Math.max(0,S.waterCups+d);persist();renderAll();}
 function updateSteps(){S.steps=document.getElementById('stepsInput').value;persist();renderAll();}
 function addExercise(type){S.exercises.push({id:Date.now(),type,miles:'',minutes:'',burned:0});persist();renderAll();}
@@ -2243,6 +2271,7 @@ function parseSmartPaste(){
   if(!name){ const colonIdx=txt.search(/:\s*\d/); if(colonIdx>0) name=txt.substring(0,colonIdx).replace(/\*+/g,'').trim(); }
   const satfat2=get([/(\d+\.?\d*)\s*g?\s*sat\s*fat/i,/saturated\s*fat[:\s]+(\d+\.?\d*)/i]);
   const fiber2=get([/(\d+\.?\d*)\s*g?\s*fiber/i,/fiber[:\s]+(\d+\.?\d*)/i]);
+  const sodium2=get([/(\d+\.?\d*)\s*mg?\s*sodium/i,/sodium[:\s]+(\d+\.?\d*)/i]);
   document.getElementById('manualCal').value  = cal  || '';
   document.getElementById('manualPro').value  = pro  || '';
   document.getElementById('manualSug').value  = sug  || '';
@@ -2250,6 +2279,7 @@ function parseSmartPaste(){
   document.getElementById('manualFat').value  = fat  || '';
   document.getElementById('manualSatFat').value = satfat2 || '';
   document.getElementById('manualFiber').value  = fiber2  || '';
+  if(document.getElementById('manualSodium')) document.getElementById('manualSodium').value = sodium2 || '';
   if(name) document.getElementById('manualName').value = name;
   document.getElementById('smartPaste').value = '';
   showToast(name ? 'Filled: ' + name : 'Fields filled! Add a name and log it.');
@@ -2278,11 +2308,12 @@ function addManualEntry(){
   const fat=parseFloat(document.getElementById('manualFat').value)||0;
   const satfat=parseFloat(document.getElementById('manualSatFat').value)||0;
   const fiber=parseFloat(document.getElementById('manualFiber').value)||0;
+  const sodium=parseFloat(document.getElementById('manualSodium')?.value)||0;
   if(!name){showToast('Add a food name',true);return;}
   if(!cal&&!pro){showToast('Add at least calories or protein',true);return;}
   const qty=parseFloat(document.getElementById('manualQty').value)||1;
   const qLabel=qty!==1?(qty<1?(" ("+qty+" serving)"):(" x"+qty)):"";
-  const mealTag=_pickerSection||'untagged';  const entry={name:name+qLabel,calories:Math.round(cal*qty),protein:Math.round(pro*qty),sugar:Math.round(sug*qty),carbs:Math.round(carb*qty),fat:Math.round(fat*qty),ingredients:name,id:'e_'+Date.now(),mealTag,timestamp:Date.now()};
+  const mealTag=_pickerSection||'untagged';  const entry={name:name+qLabel,calories:Math.round(cal*qty),protein:Math.round(pro*qty),sugar:Math.round(sug*qty),carbs:Math.round(carb*qty),fat:Math.round(fat*qty),sodium:Math.round(sodium*qty),ingredients:name,id:'e_'+Date.now(),mealTag,timestamp:Date.now()};
   addEntry(entry);
   const saveChecked=document.getElementById('saveToMenuCheck').checked;
   if(saveChecked&&_pickerSection){
@@ -2296,7 +2327,7 @@ function addManualEntry(){
   } else {
     showToast('Logged!');
   }
-  ['manualName','manualCal','manualPro','manualSug','manualCarb','manualFat','manualSatFat','manualFiber'].forEach(id=>{document.getElementById(id).value='';}); document.getElementById('manualQty').value='1';
+  ['manualName','manualCal','manualPro','manualSug','manualCarb','manualFat','manualSatFat','manualFiber','manualSodium'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); document.getElementById('manualQty').value='1';
   document.getElementById('saveToMenuCheck').checked=false;
   document.getElementById('menuSectionPicker').style.display='none';
   document.querySelectorAll('.picker-btn').forEach(b=>{b.style.background='#0f1117';b.style.color='#94a3b8';b.style.borderColor='#2d3748';});
@@ -2397,6 +2428,7 @@ window.addEventListener('load', function() {
   window.db = firebase.firestore();
   window.auth = firebase.auth();
 
+  restoreExtraMacrosPref();
   auth.onAuthStateChanged(function(user) {
     if(user) {
       _uid = user.uid;
