@@ -593,17 +593,6 @@ input, textarea { font-family: inherit; }
       <div><div style="font-weight:700;font-size:15px;">Weight Tracker</div><div style="font-size:11px;color:#94a3b8;">Log every Friday morning after your walk</div></div>
       <button class="btn-green" onclick="toggleWeightInput()" style="font-size:12px;padding:8px 14px;">+ Log Weight</button>
     </div>
-    <div id="startWeightRow" style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:14px;display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><div style="font-size:12px;color:#94a3b8;">Starting Weight</div><div id="startWeightDisplay" style="font-size:16px;font-weight:700;color:#e2e8f0;">${START_WEIGHT} lbs</div></div>
-        <button onclick="toggleStartWeightEdit()" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;padding:3px 8px;">edit</button>
-      </div>
-      <div id="startWeightEdit" style="display:none;margin-top:10px;">
-        <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Enter your starting weight (lbs)</label>
-        <div style="display:flex;gap:8px;"><input class="inp" type="number" id="startWeightInput" placeholder="e.g. 210" style="flex:1;" /><button class="btn-green" onclick="saveStartWeight()">Save</button></div>
-      </div>
-    </div>
-    <button id="startWeightToggleBtn" onclick="toggleStartWeightRow()" style="width:100%;background:none;border:1px solid #2d3748;border-radius:8px;padding:6px;font-size:11px;color:#94a3b8;cursor:pointer;font-family:inherit;margin-bottom:14px;">Show Starting Weight</button>
     <div id="weightInputRow" style="display:none;background:#22263a;border-radius:12px;padding:14px;margin-bottom:14px;">
       <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Weight (lbs)</label>
       <div style="display:flex;gap:8px;margin-bottom:10px;"><input class="inp" type="number" id="weightInput" placeholder="e.g. 200.5" style="flex:1;" /></div>
@@ -628,30 +617,7 @@ input, textarea { font-family: inherit; }
     <div id="goalDateContent"></div>
   </div>
 
-<!-- Blood Pressure Card -->
-  <div class="card" style="border-color:rgba(110,231,183,0.15);">
-    <div onclick="toggleBP()" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
-      <div>
-        <div style="font-weight:700;font-size:15px;">Blood Pressure</div>
-        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">Tap to log — track multiple readings per day</div>
-      </div>
-      <div id="bpArrow" style="font-size:20px;color:#6ee7b7;">+</div>
-    </div>
-    <div id="bpBody" style="display:none;margin-top:16px;">
-      <div id="bpEntries"></div>
-      <div style="background:#22263a;border-radius:12px;padding:14px;margin-top:12px;">
-        <div style="font-weight:700;font-size:13px;color:#6ee7b7;margin-bottom:12px;">Log Reading</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Systolic (top)</label><input class="inp" type="number" id="bpSystolic" placeholder="e.g. 120" /></div>
-          <div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Diastolic (bottom)</label><input class="inp" type="number" id="bpDiastolic" placeholder="e.g. 80" /></div>
-        </div>
-        <div style="margin-bottom:10px;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Pulse (optional)</label><input class="inp" type="number" id="bpPulse" placeholder="e.g. 72" /></div>
-        <div style="margin-bottom:12px;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Note (optional)</label><input class="inp" id="bpNote" placeholder="e.g. morning, after walk, stressed" /></div>
-        <button class="btn-green" onclick="logBP()" style="width:100%;">Save Reading</button>
-      </div>
-    </div>
-  </div>  
-<!-- Bloodwork Card -->
+  <!-- Bloodwork Card -->
   <div class="card" style="border-color:rgba(110,231,183,0.15);">
     <div onclick="toggleBloodwork()" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
       <div>
@@ -706,8 +672,8 @@ const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3.3,
   wall_pushups:5,pushups:7,calf_raises:5,lateral_lunges:7,march:6,plank:4};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
-const MENU_VERSION='v2026-05-30c';
-let START_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_startweight'))||203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
+const MENU_VERSION='v2026-06-05b';
+const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
 const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes'};
@@ -787,6 +753,13 @@ const DEFAULT_MENU={
   ]
 };
 
+const GENERIC_MENU={
+  breakfasts:[],
+  snacks:[],
+  lunches:[],
+  dinners:[],
+  shakes:[],
+};
 const SCHEDULE=[
   {time:'Wake Up',note:'Drink a full glass of water before anything else'},
   {time:'8:30 AM',note:'Walk - fasted, empty stomach. Best for fat burning.',walkDay:true},
@@ -888,7 +861,7 @@ async function _doLoadFromFirebase(){
       S.recoveryDismissed=daily.recoveryDismissed||false;
     }
     setSaveStatus('Loading menu...','#fbbf24');
- const CURRENT_MENU_VERSION='v2026-05-30b';
+ const CURRENT_MENU_VERSION=MENU_VERSION;
     const menuDoc=await fbGet('data','menu');
     const savedMenuVersion=await fbGet('data','menuVersion');
     if(menuDoc&&menuDoc.menu&&savedMenuVersion&&savedMenuVersion.version===CURRENT_MENU_VERSION){
@@ -923,22 +896,12 @@ async function _doLoadFromFirebase(){
     }
     const gwDoc=await fbGet('data','goalweight');
     if(gwDoc&&gwDoc.goalWeight) GOAL_WEIGHT=gwDoc.goalWeight;
-    const swDoc=await fbGet('data','startweight');
-    if(swDoc&&swDoc.startWeight){
-      START_WEIGHT=swDoc.startWeight;
-      const startIdx=S.weights.findIndex(w=>w.dateKey==='start');
-      if(startIdx>=0) S.weights[startIdx].weight=swDoc.startWeight;
-    }
-    const bpDoc=await fbGet('data','bp');
-    if(bpDoc&&bpDoc.bp) S.bp=bpDoc.bp;
     setSaveStatus('Ready','#94a3b8');
     ensureDefaultMeals();
     renderAll();
     return 'done';
   } catch(e) {
     setSaveStatus('Load error: '+e.message,'#f87171');
-    document.getElementById('authStatus').textContent='Access error: '+e.message;
-    document.getElementById('signInScreen').style.display='flex';
     console.error('Load error:',e);
     ensureDefaultMeals();
     renderAll();
@@ -970,7 +933,6 @@ let S={
   weights:ls('kim_tracker_weights',[{date:'Start',weight:START_WEIGHT,dateKey:'start'}]),
   menuSection:'breakfasts',
   activeTab:'daily',
-  bp:[],
 };
 
 function seedWeeklyIfEmpty(){
@@ -1688,96 +1650,6 @@ function restoreExtraMacrosPref(){
     if(btn) btn.textContent='Hide Sugar & Sodium';
   }
 }
-function toggleBP(){
-  const body=document.getElementById('bpBody');
-  const arrow=document.getElementById('bpArrow');
-  const open=body.style.display==='none';
-  body.style.display=open?'block':'none';
-  arrow.textContent=open?'−':'+';
-  if(open) renderBPEntries();
-}
-
-function renderBPEntries(){
-  const el=document.getElementById('bpEntries');
-  if(!S.bp||!S.bp.length){el.innerHTML='<div style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">No readings yet.</div>';return;}
-  const sorted=[...S.bp].reverse();
-  el.innerHTML=sorted.map((r,i)=>{
-    const sys=r.systolic,dia=r.diastolic;
-    const cat=sys>=180||dia>=120?{label:'Crisis',color:'#ef4444'}:sys>=140||dia>=90?{label:'High',color:'#f97316'}:sys>=130||dia>=80?{label:'Elevated',color:'#fbbf24'}:{label:'Normal',color:'#6ee7b7'};
-    return`<div style="background:#22263a;border-radius:10px;padding:12px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <span style="font-size:18px;font-weight:800;color:${cat.color};">${sys}/${dia}</span>
-          ${r.pulse?`<span style="font-size:12px;color:#94a3b8;margin-left:8px;">♥ ${r.pulse}</span>`:''}
-          <span style="font-size:11px;font-weight:700;color:${cat.color};margin-left:8px;">${cat.label}</span>
-        </div>
-        <button onclick="deleteBP(${S.bp.length-1-i})" style="background:none;border:none;color:#f87171;font-size:18px;cursor:pointer;">x</button>
-      </div>
-      <div style="font-size:11px;color:#94a3b8;margin-top:4px;">${r.date}${r.time?' · '+r.time:''}${r.note?' · '+r.note:''}</div>
-    </div>`;
-  }).join('');
-}
-
-function logBP(){
-  const sys=parseInt(document.getElementById('bpSystolic').value);
-  const dia=parseInt(document.getElementById('bpDiastolic').value);
-  if(!sys||!dia){showToast('Enter systolic and diastolic',true);return;}
-  if(!S.bp) S.bp=[];
-  const now=new Date();
-  S.bp.push({
-    systolic:sys,
-    diastolic:dia,
-    pulse:parseInt(document.getElementById('bpPulse').value)||null,
-    note:document.getElementById('bpNote').value.trim(),
-    date:now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-    time:now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
-    dateKey:todayKey()
-  });
-  document.getElementById('bpSystolic').value='';
-  document.getElementById('bpDiastolic').value='';
-  document.getElementById('bpPulse').value='';
-  document.getElementById('bpNote').value='';
-  fbSave('data','bp',{bp:S.bp});
-  renderBPEntries();
-  showToast('Reading saved!');
-}
-
-function deleteBP(i){
-  if(!confirm('Delete this reading?')) return;
-  S.bp.splice(i,1);
-  fbSave('data','bp',{bp:S.bp});
-  renderBPEntries();
-}
-function toggleStartWeightRow(){
-  const row=document.getElementById('startWeightRow');
-  const btn=document.getElementById('startWeightToggleBtn');
-  const open=row.style.display==='none';
-  row.style.display=open?'block':'none';
-  btn.textContent=open?'Hide Starting Weight':'Show Starting Weight';
-}
-function toggleStartWeightEdit(){
-  const ed=document.getElementById('startWeightEdit');
-  ed.style.display=ed.style.display==='none'?'block':'none';
-}
-
-function saveStartWeight(){
-  const val=parseFloat(document.getElementById('startWeightInput').value);
-  if(!val||val<50||val>500){showToast('Enter a valid weight',true);return;}
-  START_WEIGHT=val;
-  // Update the start entry in weights array
-  const startIdx=S.weights.findIndex(w=>w.dateKey==='start');
-  if(startIdx>=0) S.weights[startIdx].weight=val;
-  else S.weights.unshift({date:'Start',weight:val,dateKey:'start'});
-  document.getElementById('startWeightDisplay').textContent=val+' lbs';
-  document.getElementById('startWeightEdit').style.display='none';
-  document.getElementById('startWeightRow').style.display='none';
-  document.getElementById('startWeightToggleBtn').textContent='Show Starting Weight';
-  localStorage.setItem('kim_tracker_startweight',val);
-  fbSave('data','startweight',{startWeight:val});
-  persist();
-  renderAll();
-  showToast('Starting weight saved!');
-}
 function changeWater(d){S.waterCups=Math.max(0,S.waterCups+d);persist();renderAll();}
 function updateSteps(){S.steps=document.getElementById('stepsInput').value;persist();renderAll();}
 function addExercise(type){S.exercises.push({id:Date.now(),type,miles:'',minutes:'',burned:0});persist();renderAll();}
@@ -2485,9 +2357,6 @@ function exportData(){
     weekly:S.weekly,
     weights:S.weights,
     bloodwork:S.bloodwork,
-    bp:S.bp||[],
-    startWeight:START_WEIGHT,
-    goalWeight:GOAL_WEIGHT,
     exportDate:now.toISOString(),
     dailyLog:{
       entries:S.entries,
@@ -2519,9 +2388,6 @@ function importData(e){
       if(data.weekly) S.weekly=data.weekly;
       if(data.weights) S.weights=data.weights;
       if(data.bloodwork) S.bloodwork=data.bloodwork;
-      if(data.bp) S.bp=data.bp;
-      if(data.startWeight){ START_WEIGHT=data.startWeight; const si=S.weights.findIndex(w=>w.dateKey==='start'); if(si>=0) S.weights[si].weight=data.startWeight; }
-      if(data.goalWeight) GOAL_WEIGHT=data.goalWeight;
       if(data.dailyLog){
         const dl=data.dailyLog;
         if(dl.entries) S.entries=dl.entries;
@@ -2598,16 +2464,10 @@ window.addEventListener('load', function() {
 });
 
 window.signInWithGoogle = function() {
-  document.getElementById('authStatus').textContent = 'Signing in...';
+  document.getElementById('authStatus').textContent = 'Redirecting to Google...';
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).then(function(result){
-  }).catch(function(err) {
-    if(err.code==='auth/popup-blocked'||err.code==='auth/popup-closed-by-user'){
-      document.getElementById('authStatus').textContent = 'Popup blocked — trying redirect...';
-      auth.signInWithRedirect(provider);
-    } else {
-      document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
-    }
+  auth.signInWithRedirect(provider).catch(function(err) {
+    document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
   });
 };
 
