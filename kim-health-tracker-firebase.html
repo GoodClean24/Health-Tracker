@@ -707,7 +707,7 @@ const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3.3,
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
 const MENU_VERSION='v2026-05-30b';
-const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
+let START_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_startweight'))||203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
 const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes'};
@@ -1770,6 +1770,7 @@ function saveStartWeight(){
   document.getElementById('startWeightEdit').style.display='none';
   document.getElementById('startWeightRow').style.display='none';
   document.getElementById('startWeightToggleBtn').textContent='Show Starting Weight';
+  localStorage.setItem('kim_tracker_startweight',val);
   fbSave('data','startweight',{startWeight:val});
   persist();
   renderAll();
