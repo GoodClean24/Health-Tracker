@@ -593,7 +593,7 @@ input, textarea { font-family: inherit; }
       <div><div style="font-weight:700;font-size:15px;">Weight Tracker</div><div style="font-size:11px;color:#94a3b8;">Log every Friday morning after your walk</div></div>
       <button class="btn-green" onclick="toggleWeightInput()" style="font-size:12px;padding:8px 14px;">+ Log Weight</button>
     </div>
-    <div id="startWeightRow" style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:14px;">
+    <div id="startWeightRow" style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:14px;display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div><div style="font-size:12px;color:#94a3b8;">Starting Weight</div><div id="startWeightDisplay" style="font-size:16px;font-weight:700;color:#e2e8f0;">${START_WEIGHT} lbs</div></div>
         <button onclick="toggleStartWeightEdit()" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;padding:3px 8px;">edit</button>
@@ -603,6 +603,7 @@ input, textarea { font-family: inherit; }
         <div style="display:flex;gap:8px;"><input class="inp" type="number" id="startWeightInput" placeholder="e.g. 210" style="flex:1;" /><button class="btn-green" onclick="saveStartWeight()">Save</button></div>
       </div>
     </div>
+    <button id="startWeightToggleBtn" onclick="toggleStartWeightRow()" style="width:100%;background:none;border:1px solid #2d3748;border-radius:8px;padding:6px;font-size:11px;color:#94a3b8;cursor:pointer;font-family:inherit;margin-bottom:14px;">Show Starting Weight</button>
     <div id="weightInputRow" style="display:none;background:#22263a;border-radius:12px;padding:14px;margin-bottom:14px;">
       <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Weight (lbs)</label>
       <div style="display:flex;gap:8px;margin-bottom:10px;"><input class="inp" type="number" id="weightInput" placeholder="e.g. 200.5" style="flex:1;" /></div>
@@ -706,7 +707,7 @@ const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3.3,
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
 const MENU_VERSION='v2026-06-05b';
-const START_WEIGHT=203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
+let START_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_startweight'))||203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
 const SECTION_LABELS={breakfasts:'Breakfast',snacks:'Snacks',lunches:'Lunch',dinners:'Dinner',shakes:'Shakes'};
@@ -1755,6 +1756,13 @@ function deleteBP(i){
   fbSave('data','bp',{bp:S.bp});
   renderBPEntries();
 }
+function toggleStartWeightRow(){
+  const row=document.getElementById('startWeightRow');
+  const btn=document.getElementById('startWeightToggleBtn');
+  const open=row.style.display==='none';
+  row.style.display=open?'block':'none';
+  btn.textContent=open?'Hide Starting Weight':'Show Starting Weight';
+}
 function toggleStartWeightEdit(){
   const ed=document.getElementById('startWeightEdit');
   ed.style.display=ed.style.display==='none'?'block':'none';
@@ -1770,6 +1778,9 @@ function saveStartWeight(){
   else S.weights.unshift({date:'Start',weight:val,dateKey:'start'});
   document.getElementById('startWeightDisplay').textContent=val+' lbs';
   document.getElementById('startWeightEdit').style.display='none';
+  document.getElementById('startWeightRow').style.display='none';
+  document.getElementById('startWeightToggleBtn').textContent='Show Starting Weight';
+  localStorage.setItem('kim_tracker_startweight',val);
   fbSave('data','startweight',{startWeight:val});
   persist();
   renderAll();
@@ -2497,11 +2508,25 @@ function exportData(){
     }
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`kim-tracker-${stamp}.json`;
-  a.click();
-  showToast('Backup exported!');
+  const fileName=`health-tracker-${stamp}.json`;
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],fileName,{type:'application/json'})]})){
+    const file=new File([blob],fileName,{type:'application/json'});
+    navigator.share({files:[file],title:'Health Tracker Backup',text:'Health Tracker backup file'})
+      .then(()=>showToast('Backup shared!'))
+      .catch(()=>{
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download=fileName;
+        a.click();
+        showToast('Backup exported!');
+      });
+  } else {
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=fileName;
+    a.click();
+    showToast('Backup exported!');
+  }
 }
 
 function importData(e){
