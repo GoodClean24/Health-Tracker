@@ -867,13 +867,16 @@ async function _doLoadFromFirebase(){
     if(menuDoc&&menuDoc.menu&&savedMenuVersion&&savedMenuVersion.version===CURRENT_MENU_VERSION){
       // Menu is current version — use saved menu and merge any new DEFAULT items
       S.menu=menuDoc.menu;
-      Object.keys(DEFAULT_MENU).forEach(sec=>{
-        if(!S.menu[sec]) S.menu[sec]=[];
-        DEFAULT_MENU[sec].forEach(defaultItem=>{
-          const exists=S.menu[sec].find(x=>x.id===defaultItem.id);
-          if(!exists) S.menu[sec].push(defaultItem);
+      const mergeEmail=firebase.auth().currentUser&&firebase.auth().currentUser.email;
+      if(mergeEmail==='kim.good2424@gmail.com'){
+        Object.keys(DEFAULT_MENU).forEach(sec=>{
+          if(!S.menu[sec]) S.menu[sec]=[];
+          DEFAULT_MENU[sec].forEach(defaultItem=>{
+            const exists=S.menu[sec].find(x=>x.id===defaultItem.id);
+            if(!exists) S.menu[sec].push(defaultItem);
+          });
         });
-      });
+      }
     } else {
       // Version mismatch or no menu — load default based on user
       const userEmail=firebase.auth().currentUser&&firebase.auth().currentUser.email;
