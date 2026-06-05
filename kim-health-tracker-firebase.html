@@ -2498,11 +2498,25 @@ function exportData(){
     }
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`kim-tracker-${stamp}.json`;
-  a.click();
-  showToast('Backup exported!');
+  const fileName=`health-tracker-${stamp}.json`;
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],fileName,{type:'application/json'})]})){
+    const file=new File([blob],fileName,{type:'application/json'});
+    navigator.share({files:[file],title:'Health Tracker Backup',text:'Health Tracker backup file'})
+      .then(()=>showToast('Backup shared!'))
+      .catch(()=>{
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download=fileName;
+        a.click();
+        showToast('Backup exported!');
+      });
+  } else {
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=fileName;
+    a.click();
+    showToast('Backup exported!');
+  }
 }
 
 function importData(e){
