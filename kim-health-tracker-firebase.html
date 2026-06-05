@@ -2595,10 +2595,16 @@ window.addEventListener('load', function() {
 });
 
 window.signInWithGoogle = function() {
-  document.getElementById('authStatus').textContent = 'Redirecting to Google...';
+  document.getElementById('authStatus').textContent = 'Signing in...';
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithRedirect(provider).catch(function(err) {
-    document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
+  auth.signInWithPopup(provider).then(function(result){
+  }).catch(function(err) {
+    if(err.code==='auth/popup-blocked'||err.code==='auth/popup-closed-by-user'){
+      document.getElementById('authStatus').textContent = 'Popup blocked — trying redirect...';
+      auth.signInWithRedirect(provider);
+    } else {
+      document.getElementById('authStatus').textContent = 'Sign in failed: ' + err.message;
+    }
   });
 };
 
