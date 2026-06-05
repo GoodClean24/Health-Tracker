@@ -706,7 +706,7 @@ const BURN={walk:5,bike:8,weights:3.3,yard:4,carwash:3.3,
   wall_pushups:5,pushups:7,calf_raises:5,lateral_lunges:7,march:6,plank:4};
 const WALK_DAYS=['Monday','Tuesday','Wednesday','Friday'];
 const ACTIVITY_DAYS=['Saturday','Sunday'];
-const CURRENT_MENU_VERSION=MENU_VERSION;
+const MENU_VERSION='v2026-05-30c';
 let START_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_startweight'))||203;let GOAL_WEIGHT=parseFloat(localStorage.getItem('kim_tracker_goalweight'))||193;
 const TABS=['Daily Log','Menu Guide','Snack Time','Progress'];
 const TAB_IDS=['daily','menu','myday','progress'];
@@ -787,13 +787,6 @@ const DEFAULT_MENU={
   ]
 };
 
-const GENERIC_MENU={
-  breakfasts:[],
-  snacks:[],
-  lunches:[],
-  dinners:[],
-  shakes:[],
-};
 const SCHEDULE=[
   {time:'Wake Up',note:'Drink a full glass of water before anything else'},
   {time:'8:30 AM',note:'Walk - fasted, empty stomach. Best for fat burning.',walkDay:true},
@@ -895,7 +888,7 @@ async function _doLoadFromFirebase(){
       S.recoveryDismissed=daily.recoveryDismissed||false;
     }
     setSaveStatus('Loading menu...','#fbbf24');
- const CURRENT_MENU_VERSION='v2026-06-05a';
+ const CURRENT_MENU_VERSION='v2026-05-30b';
     const menuDoc=await fbGet('data','menu');
     const savedMenuVersion=await fbGet('data','menuVersion');
     if(menuDoc&&menuDoc.menu&&savedMenuVersion&&savedMenuVersion.version===CURRENT_MENU_VERSION){
@@ -909,10 +902,8 @@ async function _doLoadFromFirebase(){
         });
       });
     } else {
-      // Version mismatch or no menu — load default based on user
-      const userEmail=firebase.auth().currentUser&&firebase.auth().currentUser.email;
-      const isKim=userEmail==='kim.good2424@gmail.com';
-      S.menu=isKim?JSON.parse(JSON.stringify(DEFAULT_MENU)):JSON.parse(JSON.stringify(GENERIC_MENU));
+      // Version mismatch or no menu — force reset to DEFAULT_MENU
+      S.menu=JSON.parse(JSON.stringify(DEFAULT_MENU));
       await fbSave('data','menu',{menu:S.menu});
       await fbSave('data','menuVersion',{version:CURRENT_MENU_VERSION});
     }
@@ -2507,25 +2498,11 @@ function exportData(){
     }
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const fileName=`health-tracker-${stamp}.json`;
-  if(navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],fileName,{type:'application/json'})]})){
-    const file=new File([blob],fileName,{type:'application/json'});
-    navigator.share({files:[file],title:'Health Tracker Backup',text:'Health Tracker backup file'})
-      .then(()=>showToast('Backup shared!'))
-      .catch(()=>{
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download=fileName;
-        a.click();
-        showToast('Backup exported!');
-      });
-  } else {
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download=fileName;
-    a.click();
-    showToast('Backup exported!');
-  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`kim-tracker-${stamp}.json`;
+  a.click();
+  showToast('Backup exported!');
 }
 
 function importData(e){
