@@ -1114,6 +1114,23 @@ function renderAll(){
     weekPaceEl.innerHTML='<span style="color:'+(onPace?'#6ee7b7':'#fbbf24')+';font-weight:700;">On pace to lose ~'+projLbs+' lbs this week</span><br><span style="font-size:11px;color:#94a3b8;">'+totalWeekDeficit.toLocaleString()+' cal deficit so far this week</span>';
   } else { weekPaceEl.style.display='none'; }
 
+  const netCal=t.calories-burned;
+  const netWarningEl=document.getElementById('netCalWarning');
+  if(netWarningEl){
+    if(netCal<1200&&t.calories>0&&burned>0){
+      netWarningEl.style.display='block';
+      netWarningEl.innerHTML=`<div style="font-size:12px;color:#f87171;font-weight:700;">⚠️ Net calories too low (${fmt(netCal)} cal) — add a protein shake or small meal to protect muscle.</div>`;
+    } else if(td>=500&&td<750){
+      netWarningEl.style.display='block';
+      netWarningEl.innerHTML=`<div style="font-size:12px;color:#6ee7b7;font-weight:700;">✅ Perfect deficit range — fat burning without muscle loss.</div><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Sweet spot: 500-750 cal deficit daily.</div>`;
+    } else if(td>=750){
+      netWarningEl.style.display='block';
+      netWarningEl.innerHTML=`<div style="font-size:12px;color:#fbbf24;font-weight:700;">⚡ High deficit today — make sure you hit 110g protein.</div><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Sweet spot: 500-750 cal deficit daily.</div>`;
+    } else {
+      netWarningEl.style.display='none';
+    }
+  }
+
   const tips=document.getElementById('deficitTips');
   if(cu<0){tips.style.display='block';tips.innerHTML=`<div style="font-size:11px;color:#f87171;font-weight:700;margin-bottom:6px;">You're ${fmt(Math.abs(cu))} cal over. To offset:</div><div style="font-size:12px;color:#e2e8f0;">Walk ${Math.ceil(Math.abs(cu)/BURN.walk)} more minutes</div><div style="font-size:12px;color:#e2e8f0;margin-top:4px;">Bike ${Math.ceil(Math.abs(cu)/BURN.bike)} more minutes</div>`;}else tips.style.display='none';
 
