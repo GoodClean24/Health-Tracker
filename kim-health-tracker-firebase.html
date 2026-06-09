@@ -1117,7 +1117,7 @@ function renderAll(){
   const netCal=t.calories-burned;
   const netWarningEl=document.getElementById('netCalWarning');
   if(netWarningEl){
-    if(netCal<800&&t.calories>0&&burned>200){
+    if(netCal<700&&t.calories>0&&burned>200){
       netWarningEl.style.display='block';
       netWarningEl.innerHTML=`<div style="font-size:12px;color:#f87171;font-weight:700;">⚠️ Net calories too low (${fmt(netCal)} cal) — add a protein shake or small meal to protect muscle.</div>`;
     } else if(td>=500&&td<750){
