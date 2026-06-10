@@ -1216,7 +1216,7 @@ function renderCoach(t,wOz){
     const hour=new Date().getHours();
     const proteinLeft=GOALS.protein-t.protein;
     const overCal=t.calories-GOALS.calories;
-    if(proteinLeft>30){
+    if(proteinLeft>30&&t.protein<GOALS.protein){
       let timeMsg='';
       if(hour<12) timeMsg='You have most of the day ahead — spread it across meals.';
       else if(hour<17) timeMsg='Add protein at lunch or an afternoon snack.';
