@@ -289,7 +289,8 @@ input, textarea { font-family: inherit; }
 
   <div class="card" id="deficitCard">
     <div style="font-weight:700;font-size:15px;margin-bottom:4px;">Today's Calories</div>
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">Sweet spot: 500-750 cal deficit daily · Net calories should stay above 1,200</div>
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">Target: 700 cal deficit daily · Adjusts based on activity</div>
+    <div id="dynCalLabel" style="font-size:12px;color:#6ee7b7;font-weight:700;margin-bottom:12px;">Goal: 1,500 cal (rest/light day)</div>
     <div id="dynCalLabel" style="font-size:12px;color:#6ee7b7;font-weight:700;margin-bottom:12px;">Goal: 1,500 cal (rest/light day)</div>
     <div style="text-align:center;margin-bottom:16px;">
       <div id="deficitBigNum" style="font-size:48px;font-weight:800;line-height:1;color:#6ee7b7;">0</div>
@@ -1115,17 +1116,21 @@ function renderAll(){
   }
 
   const cu=caloriesUnderGoal(), td=totalDeficit();
-  const tdColor=td>=500?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
-  document.getElementById('deficitBigNum').textContent=(td>=0?'+':'')+fmt(td);
-  document.getElementById('deficitBigNum').style.color=tdColor;
-  document.getElementById('deficitCard').style.borderColor=td>=500?'rgba(110,231,183,0.4)':'#2d3748';
-  document.getElementById('deficitLabel').textContent='cal deficit today (TDEE 1,950 - eaten + burned)';
-  const dynLabelEl=document.getElementById('dynCalLabel');
-  if(dynLabelEl) dynLabelEl.textContent=dynamicCalLabel();
-  const bpct=Math.min(Math.max((td/500)*100,0),100);
+  const leftToEat=dynamicCalTarget()-t.calories+burned-700;
+  const lteColor=leftToEat>200?'#6ee7b7':leftToEat>0?'#fbbf24':'#f87171';
+  const lteMsg=leftToEat>400?'You have room — eat a balanced lunch and dinner':leftToEat>200?'On track — plan a normal dinner':leftToEat>0?'Almost done — keep dinner light':leftToEat>-200?'Right on target — stop eating for the day':'Over today — skip evening snacks';
+  document.getElementById('deficitBigNum').textContent=leftToEat>0?fmt(leftToEat)+' cal left':fmt(Math.abs(leftToEat))+' cal over';
+  document.getElementById('deficitBigNum').style.color=lteColor;
+  document.getElementById('deficitCard').style.borderColor=leftToEat>=0&&leftToEat<=200?'rgba(110,231,183,0.4)':'#2d3748';
+  document.getElementById('deficitLabel').textContent=lteMsg;
+  const bpct=Math.min(Math.max(((dynamicCalTarget()-leftToEat-700)/dynamicCalTarget())*100,0),100);
   document.getElementById('deficitBar').style.width=bpct+'%';
-  document.getElementById('deficitBar').style.background=td>=500?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
-  document.getElementById('deficitStats').innerHTML=[{l:'Ate',v:fmt(t.calories)+' cal',c:t.calories<=GOALS.calories?'#6ee7b7':'#f87171'},{l:'Burned (Bonus)',v:'+'+fmt(burned)+' cal',c:'#6ee7b7'},{l:'Total Deficit',v:fmt(td)+' cal',c:td>=500?'#6ee7b7':'#fbbf24'}].map(s=>`<div style="flex:1;background:#22263a;border-radius:10px;padding:8px 4px;text-align:center;"><div style="font-size:12px;font-weight:700;color:${s.c};">${s.v}</div><div style="font-size:9px;color:#94a3b8;">${s.l}</div></div>`).join('');
+  document.getElementById('deficitBar').style.background=leftToEat<=200&&leftToEat>=0?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
+  document.getElementById('deficitStats').innerHTML=[
+    {l:'🍽️ Eaten',v:fmt(t.calories)+' cal',c:t.calories<=(dynamicCalTarget())?'#6ee7b7':'#f87171'},
+    {l:'🔥 Burned',v:'+'+fmt(burned)+' cal',c:burned>0?'#6ee7b7':'#94a3b8'},
+    {l:'🎯 Left to Eat',v:leftToEat>0?fmt(leftToEat)+' cal':'Done!',c:lteColor}
+  ].map(s=>`<div style="flex:1;background:#22263a;border-radius:10px;padding:8px 4px;text-align:center;"><div style="font-size:12px;font-weight:700;color:${s.c};">${s.v}</div><div style="font-size:9px;color:#94a3b8;">${s.l}</div></div>`).join('');
   // Week pace
   const weekPaceEl=document.getElementById('weekPace');
   if(S.entries.length>0){
