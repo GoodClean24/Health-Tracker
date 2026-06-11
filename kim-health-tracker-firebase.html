@@ -289,7 +289,8 @@ input, textarea { font-family: inherit; }
 
   <div class="card" id="deficitCard">
     <div style="font-weight:700;font-size:15px;margin-bottom:4px;">Today's Calories</div>
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:16px;">Sweet spot: 500-750 cal deficit daily · Net calories should stay above 1,200</div>
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">Sweet spot: 500-750 cal deficit daily · Net calories should stay above 1,200</div>
+    <div id="dynCalLabel" style="font-size:12px;color:#6ee7b7;font-weight:700;margin-bottom:12px;">Goal: 1,500 cal (rest/light day)</div>
     <div style="text-align:center;margin-bottom:16px;">
       <div id="deficitBigNum" style="font-size:48px;font-weight:800;line-height:1;color:#6ee7b7;">0</div>
       <div id="deficitLabel" style="font-size:12px;color:#94a3b8;margin-top:6px;">log food to see your total</div>
@@ -958,6 +959,23 @@ async function _doLoadFromFirebase(){
   }
 }
 
+function dynamicCalTarget(){
+  const b=totalBurned();
+  if(b>=1000) return 1900;
+  if(b>=800)  return 1850;
+  if(b>=600)  return 1750;
+  if(b>=400)  return 1600;
+  return 1500;
+}
+
+function dynamicCalLabel(){
+  const b=totalBurned();
+  if(b>=1000) return 'Goal: 1,900 cal (max burn day)';
+  if(b>=800)  return 'Goal: 1,850 cal (high burn day)';
+  if(b>=600)  return 'Goal: 1,750 cal (active day)';
+  if(b>=400)  return 'Goal: 1,600 cal (moderate day)';
+  return 'Goal: 1,500 cal (rest/light day)';
+}
 function fmt(n){return Math.round(n||0);}
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function getDayName(){return new Date().toLocaleDateString('en-US',{weekday:'long'});}
@@ -1028,7 +1046,7 @@ function stepsBurned(){return Math.round((parseInt(S.steps)||0)*0.04);}
 function exBurned(){return S.exercises.reduce((a,ex)=>a+(ex.burned||0),0);}
 function totalBurned(){return stepsBurned()+exBurned();}
 function netCals(){return totals().calories-totalBurned();}
-function caloriesUnderGoal(){return GOALS.calories-totals().calories;}  // food vs 1600 eating goal
+function caloriesUnderGoal(){return dynamicCalTarget()-totals().calories;}  // food vs dynamic eating goal
 function totalDeficit(){return TDEE-totals().calories+totalBurned();}  // real deficit: TDEE - eaten + burned
 
 let toastTimer;
@@ -1086,7 +1104,7 @@ function renderAll(){
   document.getElementById('s-protein').textContent=fmt(t.protein)+'g';document.getElementById('s-protein').style.color=t.protein>=GOALS.protein*0.9?'#6ee7b7':'#fbbf24';
 
   macroBar('macroBarProtein','Protein',t.protein,GOALS.protein,'g',false);
-  macroBar('macroBarCalories','Calories',t.calories,GOALS.calories,' kcal',false);
+  macroBar('macroBarCalories','Calories',t.calories,dynamicCalTarget(),' kcal',false);
   macroBar('macroBarCarbs','Carbs',t.carbs,GOALS.carbs,'g',false);
   macroBar('macroBarSatFat','Sat Fat',t.satfat,GOALS.satfat,'g',true);
   macroBar('macroBarFiber','Fiber',t.fiber,GOALS.fiber,'g',false);
@@ -1102,6 +1120,8 @@ function renderAll(){
   document.getElementById('deficitBigNum').style.color=tdColor;
   document.getElementById('deficitCard').style.borderColor=td>=500?'rgba(110,231,183,0.4)':'#2d3748';
   document.getElementById('deficitLabel').textContent='cal deficit today (TDEE 1,950 - eaten + burned)';
+  const dynLabelEl=document.getElementById('dynCalLabel');
+  if(dynLabelEl) dynLabelEl.textContent=dynamicCalLabel();
   const bpct=Math.min(Math.max((td/500)*100,0),100);
   document.getElementById('deficitBar').style.width=bpct+'%';
   document.getElementById('deficitBar').style.background=td>=500?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
@@ -1395,7 +1415,7 @@ function renderProgress(){
     const wkLabel=`Week of ${new Date(wk+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${wkEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
     const wkId='wk_'+wk.replace(/-/g,'');
     const daysHtml=wkDays.map(day=>{
-      const calOk=(day.net||day.calories)<=GOALS.calories;
+      const calOk=(day.net||day.calories)<=(day.dailyCalTarget||GOALS.calories);
       const protOk=day.protein>=GOALS.protein*0.9;
       const defOk=(day.deficit||0)>=GOALS.deficit;
       const burnOk=(day.burned||0)>=GOALS.burn;
@@ -1937,7 +1957,7 @@ function saveDay(){
   const t=totals();
   const today=new Date().toLocaleDateString('en-US',{weekday:'short',month:'2-digit',day:'2-digit',year:'numeric'});
   const existing=S.weekly.findIndex(d=>d.dateKey===dk);
-  const t2=totals();const dayData={date:today,dateKey:dk,...t2,net:netCals(),steps:parseInt(S.steps)||0,burned:totalBurned(),count:S.entries.length,exercises:[...S.exercises],waterOz:S.waterCups*20,deficit:totalDeficit(),sleepHours:S.sleepLogged?S.sleepHours:null,satfat:t2.satfat||0,fiber:t2.fiber||0};
+  const t2=totals();const dayData={date:today,dateKey:dk,...t2,net:netCals(),steps:parseInt(S.steps)||0,burned:totalBurned(),dailyCalTarget:dynamicCalTarget(),count:S.entries.length,exercises:[...S.exercises],waterOz:S.waterCups*20,deficit:totalDeficit(),sleepHours:S.sleepLogged?S.sleepHours:null,satfat:t2.satfat||0,fiber:t2.fiber||0};
   if(existing>=0)S.weekly[existing]=dayData;else S.weekly.push(dayData);
   S.entries=[];S.steps='';S.exercises=[];S.waterCups=0;S.milkLogged=false;S.electroLogged=false;S.recoveryDismissed=false;
   persist();renderAll();showToast('Day saved to Progress!');
