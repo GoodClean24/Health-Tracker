@@ -291,14 +291,13 @@ input, textarea { font-family: inherit; }
     <div style="font-weight:700;font-size:15px;margin-bottom:4px;">Today's Calories</div>
     <div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">Target: 700 cal deficit daily · Adjusts based on activity</div>
     <div id="dynCalLabel" style="font-size:12px;color:#6ee7b7;font-weight:700;margin-bottom:12px;">Goal: 1,500 cal (rest/light day)</div>
-    <div id="dynCalLabel" style="font-size:12px;color:#6ee7b7;font-weight:700;margin-bottom:12px;">Goal: 1,500 cal (rest/light day)</div>
     <div style="text-align:center;margin-bottom:16px;">
       <div id="deficitBigNum" style="font-size:48px;font-weight:800;line-height:1;color:#6ee7b7;">0</div>
       <div id="deficitLabel" style="font-size:12px;color:#94a3b8;margin-top:6px;">log food to see your total</div>
     </div>
     <div style="background:#2d3748;border-radius:6px;height:10px;margin-bottom:14px;overflow:hidden;"><div id="deficitBar" style="height:100%;border-radius:6px;transition:width 0.4s;width:0%;background:#6ee7b7;"></div></div>
     <div style="display:flex;gap:8px;" id="deficitStats"></div>
-    <div id="netCalWarning" style="display:none;"></div>
+    <div id="netCalWarning" style="margin-top:12px;display:none;background:#22263a;border-radius:10px;padding:12px;"></div>
     <div id="deficitTips" style="margin-top:12px;display:none;background:#22263a;border-radius:10px;padding:12px;"></div>
     <div id="weekPace" style="margin-top:12px;text-align:center;font-size:13px;color:#94a3b8;display:none;"></div>
   </div>
@@ -1123,10 +1122,6 @@ function renderAll(){
   document.getElementById('deficitBigNum').style.color=lteColor;
   document.getElementById('deficitCard').style.borderColor=leftToEat>=0&&leftToEat<=200?'rgba(110,231,183,0.4)':'#2d3748';
   document.getElementById('deficitLabel').textContent=lteMsg;
-  const dynLabelEl=document.getElementById('dynCalLabel');
-  if(dynLabelEl) dynLabelEl.textContent=dynamicCalLabel();
-  const dynLabelEl=document.getElementById('dynCalLabel');
-  if(dynLabelEl) dynLabelEl.textContent=dynamicCalLabel();
   const bpct=Math.min(Math.max(((dynamicCalTarget()-leftToEat-700)/dynamicCalTarget())*100,0),100);
   document.getElementById('deficitBar').style.width=bpct+'%';
   document.getElementById('deficitBar').style.background=leftToEat<=200&&leftToEat>=0?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
