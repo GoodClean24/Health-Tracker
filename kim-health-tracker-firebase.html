@@ -1179,7 +1179,31 @@ function renderExercises(){
     mountain_climbers:'Mountain Climbers',squat_reach:'Squat to Standing Reach',side_steps:'Side Step Touches',
     bicycle_crunches:'Standing Bicycle Crunches',arm_circles:'Arm Circles',wall_pushups:'Wall Push-Ups',
     pushups:'Push-Ups',plank:'Plank',calf_raises:'Calf Raises',lateral_lunges:'Lateral Lunges',march:'March in Place'};
-  document.getElementById('exerciseList').innerHTML=S.exercises.map((ex,i)=>`<div style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-weight:700;font-size:13px;color:#6ee7b7;">${names[ex.type]||ex.type}</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;color:#6ee7b7;font-weight:700;">${ex.burned} kcal</span><button onclick="removeExercise(${i})" style="background:none;border:none;color:#f87171;font-size:18px;cursor:pointer;">x</button></div></div><div style="display:flex;gap:8px;margin-bottom:${ex.type==='weights'?'8px':'0px'}">${(ex.type==='walk'||ex.type==='bike')?`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Miles</label><input class="inp" type="number" value="${ex.miles||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'miles',this.value)" /></div>`:''}<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Minutes</label><input class="inp" type="number" value="${ex.minutes||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'minutes',this.value)" /></div></div>${ex.type==='weights'?`<div><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">What did you do? (optional)</label><input class="inp" value="${ex.notes||''}" placeholder="e.g. squats, lunges, push-ups" style="font-size:12px;" onchange="updateExercise(${i},'notes',this.value)" /></div>`:''}</div>`).join('');
+  const watchTypes=['walk','bike','weights','yard','carwash'];
+  document.getElementById('exerciseList').innerHTML=S.exercises.map((ex,i)=>{
+    const isWatch=watchTypes.includes(ex.type);
+    const needsMiles=ex.type==='walk'||ex.type==='bike';
+    const milesField=needsMiles?`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Miles</label><input class="inp" type="number" value="${ex.miles||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'miles',this.value)" /></div>`:'';
+    const minutesField=`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Minutes</label><input class="inp" type="number" value="${ex.minutes||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'minutes',this.value)" /></div>`;
+    const calField=isWatch?`<div style="flex:1;"><label style="font-size:10px;color:#6ee7b7;display:block;margin-bottom:3px;">Calories (from watch)</label><input class="inp" type="number" value="${ex.manualCal||''}" placeholder="0" style="font-size:13px;border-color:#6ee7b7;" onchange="updateExercise(${i},'manualCal',this.value)" /></div>`:'';
+    const notesField=ex.type==='weights'?`<div style="margin-top:8px;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">What did you do? (optional)</label><input class="inp" value="${ex.notes||''}" placeholder="e.g. squats, lunges, push-ups" style="font-size:12px;" onchange="updateExercise(${i},'notes',this.value)" /></div>`:'';
+    const autoCalField=!isWatch?`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Minutes</label><input class="inp" type="number" value="${ex.minutes||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'minutes',this.value)" /></div>`:'';
+    return`<div style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-weight:700;font-size:13px;color:#6ee7b7;">${names[ex.type]||ex.type}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:#6ee7b7;font-weight:700;">${ex.burned} kcal</span>
+          <button onclick="removeExercise(${i})" style="background:none;border:none;color:#f87171;font-size:18px;cursor:pointer;">x</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        ${milesField}
+        ${isWatch?minutesField:autoCalField}
+        ${calField}
+      </div>
+      ${notesField}
+    </div>`;
+  }).join('');
 }
 
 function sortEntries(entries){
@@ -1861,7 +1885,18 @@ function addCardio(){
   sel.value='';
   persist();renderAll();
 }
-function updateExercise(i,field,val){S.exercises[i][field]=val;S.exercises[i].burned=Math.round(BURN[S.exercises[i].type]*(parseFloat(S.exercises[i].minutes)||0));persist();renderAll();}
+function updateExercise(i,field,val){
+  const watchTypes=['walk','bike','weights','yard','carwash'];
+  S.exercises[i][field]=val;
+  if(watchTypes.includes(S.exercises[i].type)){
+    // Watch-tracked: use manual calorie entry
+    S.exercises[i].burned=parseFloat(S.exercises[i].manualCal)||0;
+  } else {
+    // Cardio burst: auto-calculate
+    S.exercises[i].burned=Math.round(BURN[S.exercises[i].type]*(parseFloat(S.exercises[i].minutes)||0));
+  }
+  persist();renderAll();
+}
 function removeExercise(i){S.exercises.splice(i,1);persist();renderAll();}
 function logMilk(){if(S.milkLogged)return;addEntry({name:'Fairlife Chocolate Milk - Post Workout Recovery',calories:140,protein:13,sugar:12,carbs:23,fat:2});S.milkLogged=true;persist();renderAll();showToast('Chocolate milk logged!');}
 function logElectro(){S.electroLogged=true;persist();renderAll();showToast('Electrolytes checked!');}
