@@ -1122,6 +1122,8 @@ function renderAll(){
   document.getElementById('deficitBigNum').style.color=lteColor;
   document.getElementById('deficitCard').style.borderColor=leftToEat>=0&&leftToEat<=200?'rgba(110,231,183,0.4)':'#2d3748';
   document.getElementById('deficitLabel').textContent=lteMsg;
+  const dynLabelEl=document.getElementById('dynCalLabel');
+  if(dynLabelEl) dynLabelEl.textContent=dynamicCalLabel();
   const bpct=Math.min(Math.max(((dynamicCalTarget()-leftToEat-700)/dynamicCalTarget())*100,0),100);
   document.getElementById('deficitBar').style.width=bpct+'%';
   document.getElementById('deficitBar').style.background=leftToEat<=200&&leftToEat>=0?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
