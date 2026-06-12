@@ -960,7 +960,7 @@ async function _doLoadFromFirebase(){
 }
 
 function dynamicCalTarget(){
-  const b=totalBurned();
+  const b=exBurned();
   if(b>=1000) return 1900;
   if(b>=800)  return 1850;
   if(b>=600)  return 1750;
@@ -969,7 +969,7 @@ function dynamicCalTarget(){
 }
 
 function dynamicCalLabel(){
-  const b=totalBurned();
+  const b=exBurned();
   if(b>=1000) return 'Goal: 1,900 cal (max burn day)';
   if(b>=800)  return 'Goal: 1,850 cal (high burn day)';
   if(b>=600)  return 'Goal: 1,750 cal (active day)';
