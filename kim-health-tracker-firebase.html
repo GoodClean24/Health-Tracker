@@ -1116,8 +1116,8 @@ function renderAll(){
 
   const cu=caloriesUnderGoal(), td=totalDeficit();
   const leftToEat=dynamicCalTarget()-t.calories+burned-700;
-  const lteColor=leftToEat>200?'#6ee7b7':leftToEat>0?'#fbbf24':'#f87171';
-  const lteMsg=leftToEat>400?'You have room — eat a balanced lunch and dinner':leftToEat>200?'On track — plan a normal dinner':leftToEat>0?'Almost done — keep dinner light':leftToEat>-200?'Right on target — stop eating for the day':'Over today — skip evening snacks';
+  const lteColor=td>=500&&td<=750?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
+  const lteMsg='cal deficit today (TDEE 1,950 - eaten + burned)';
   document.getElementById('deficitBigNum').textContent=leftToEat>0?fmt(leftToEat)+' cal left':fmt(Math.abs(leftToEat))+' cal over';
   document.getElementById('deficitBigNum').style.color=lteColor;
   document.getElementById('deficitCard').style.borderColor=leftToEat>=0&&leftToEat<=200?'rgba(110,231,183,0.4)':'#2d3748';
