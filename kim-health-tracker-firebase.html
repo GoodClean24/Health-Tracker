@@ -1146,17 +1146,7 @@ function renderAll(){
   const netCal=t.calories-burned;
   const netWarningEl=document.getElementById('netCalWarning');
   if(netWarningEl){
-    if(netCal<500&&t.calories>0&&totalBurned()>200){
-      netWarningEl.style.display='block';
-      netWarningEl.innerHTML=`<div style="font-size:12px;color:#f87171;font-weight:700;">⚠️ Net calories too low (${fmt(netCal)} cal) — add a protein shake or small meal to protect muscle.</div>`;
-    } else if(td>=500&&td<750){
-      netWarningEl.style.display='block';
-      netWarningEl.innerHTML=`<div style="font-size:12px;color:#6ee7b7;font-weight:700;">✅ Perfect deficit range — fat burning without muscle loss.</div><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Sweet spot: 500-750 cal deficit daily.</div>`;
-    } else if(td>=750&&totalBurned()>200&&t.protein<GOALS.protein){
-      netWarningEl.style.display='block';
-      netWarningEl.innerHTML=`<div style="font-size:12px;color:#fbbf24;font-weight:700;">⚡ High deficit today — make sure you hit 110g protein.</div><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Sweet spot: 500-750 cal deficit daily.</div>`;
-    } else {
-      netWarningEl.style.display='none';
+    if(false){
     }
   }
 
