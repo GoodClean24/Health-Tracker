@@ -1140,9 +1140,9 @@ function renderAll(){
   document.getElementById('deficitLabel').textContent=lteMsg;
   const dynLabelEl=document.getElementById('dynCalLabel');
   if(dynLabelEl) dynLabelEl.textContent=dynamicCalLabel();
-  const bpct=Math.min(Math.max(((dynamicCalTarget()-leftToEat-700)/dynamicCalTarget())*100,0),100);
+  const bpct=leftToEat<=0?100:Math.min(Math.max(((dynamicCalTarget()-leftToEat-700)/dynamicCalTarget())*100,0),100);
   document.getElementById('deficitBar').style.width=bpct+'%';
-  document.getElementById('deficitBar').style.background=leftToEat<=200&&leftToEat>=0?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
+  document.getElementById('deficitBar').style.background=leftToEat<0?'#f87171':leftToEat<=200?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
   document.getElementById('deficitStats').innerHTML=[
     {l:'🍽️ Eaten',v:fmt(t.calories)+' cal',c:t.calories<=(dynamicCalTarget())?'#6ee7b7':'#f87171'},
     {l:'🔥 Burned',v:'+'+fmt(burned)+' cal',c:burned>0?'#6ee7b7':'#94a3b8'},
