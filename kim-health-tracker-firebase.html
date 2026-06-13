@@ -1097,7 +1097,7 @@ function macroChips(item){
 }
 
 function renderAll(){
-  const t=totals(),burned=exBurned(),net=netCals(),wOz=S.waterCups*20;
+  const t=totals(),burned=exBurned()+Math.round(stepsBurned()*0.5),net=netCals(),wOz=S.waterCups*20;
   const dayName=getDayName(),walkDay=isWalkDay(),weekend=isWeekend();
   document.getElementById('dayBadge').textContent=walkDay?'Walk Day':weekend?'Weekend Activity':'Rest or Bike Day';
   document.getElementById('todayDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
