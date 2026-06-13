@@ -1132,7 +1132,7 @@ function renderAll(){
 
   const cu=caloriesUnderGoal(), td=totalDeficit();
   const leftToEat=dynamicCalTarget()-t.calories+burned-700;
-  const lteColor=td>=500&&td<=750?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
+  const lteColor=leftToEat>0&&leftToEat<=200?'#6ee7b7':leftToEat>200?'#fbbf24':'#f87171';
   const lteMsg='cal deficit today (TDEE 1,950 - eaten + burned)';
   document.getElementById('deficitBigNum').textContent=leftToEat>0?fmt(leftToEat)+' cal left':fmt(Math.abs(leftToEat))+' cal over';
   document.getElementById('deficitBigNum').style.color=lteColor;
