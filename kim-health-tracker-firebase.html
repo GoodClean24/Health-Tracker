@@ -978,7 +978,7 @@ function dynamicCalLabel(){
   return 'Goal: 1,500 cal (rest/light day)';
 }
 function dynamicCalTarget(){
-  const b=Math.round(exBurned()*0.80);
+  const b=exBurned();
   if(b>=1000) return 1950;
   if(b>=800)  return 1850;
   if(b>=600)  return 1750;
@@ -986,7 +986,7 @@ function dynamicCalTarget(){
   return 1500;
 }
 function dynamicCalLabel(){
-  const b=Math.round(exBurned()*0.80);
+  const b=exBurned();
   if(b>=1000) return 'Goal: 1,950 cal (max burn day)';
   if(b>=800)  return 'Goal: 1,850 cal (high burn day)';
   if(b>=600)  return 'Goal: 1,750 cal (active day)';
