@@ -1168,7 +1168,7 @@ function renderAll(){
   }
 
   const tips=document.getElementById('deficitTips');
-  if(cu<0){tips.style.display='block';tips.innerHTML=`<div style="font-size:11px;color:#f87171;font-weight:700;margin-bottom:6px;">You're ${fmt(Math.abs(cu))} cal over. To offset:</div><div style="font-size:12px;color:#e2e8f0;">Walk ${Math.ceil(Math.abs(cu)/BURN.walk)} more minutes</div><div style="font-size:12px;color:#e2e8f0;margin-top:4px;">Bike ${Math.ceil(Math.abs(cu)/BURN.bike)} more minutes</div>`;}else tips.style.display='none';
+  tips.style.display='none';
 
   document.getElementById('waterOzDisplay').textContent=wOz+'oz';document.getElementById('waterOzDisplay').style.color=wOz>=GOALS.water?'#6ee7b7':'#fbbf24';
   document.getElementById('waterCupDisplay').textContent=S.waterCups+' cups';
