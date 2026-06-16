@@ -1203,6 +1203,12 @@ function renderExercises(){
     const milesField=needsMiles?`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Miles</label><input class="inp" type="number" value="${ex.miles||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'miles',this.value)" /></div>`:'';
     const minutesField=`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Minutes</label><input class="inp" type="number" value="${ex.minutes||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'minutes',this.value)" /></div>`;
     const calField=isWatch?`<div style="flex:1;"><label style="font-size:10px;color:#6ee7b7;display:block;margin-bottom:3px;">Calories (from watch)</label><input class="inp" type="number" value="${ex.manualCal||''}" placeholder="0" style="font-size:13px;border-color:#6ee7b7;" onchange="updateExercise(${i},'manualCal',this.value)" /></div>`:'';
+    const correctionInfo=(isWatch&&ex.rawCal)?`<div style="margin-top:8px;background:#1a1d27;border-radius:8px;padding:8px 10px;font-size:11px;color:#94a3b8;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+      <span>Raw: <b style="color:#e2e8f0;">${fmt(ex.rawCal)} cal</b></span>
+      <span>Factor: <b style="color:#e2e8f0;">${ex.factor||0.75}</b></span>
+      <span>Adjusted: <b style="color:#6ee7b7;">${fmt(ex.burned)} cal</b></span>
+      <span>Discounted: <b style="color:#f87171;">${fmt(ex.discounted||0)} cal</b></span>
+    </div>`:'';
     const notesField=ex.type==='weights'?`<div style="margin-top:8px;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">What did you do? (optional)</label><input class="inp" value="${ex.notes||''}" placeholder="e.g. squats, lunges, push-ups" style="font-size:12px;" onchange="updateExercise(${i},'notes',this.value)" /></div>`:'';
     const autoCalField=!isWatch?`<div style="flex:1;"><label style="font-size:10px;color:#94a3b8;display:block;margin-bottom:3px;">Minutes</label><input class="inp" type="number" value="${ex.minutes||''}" placeholder="0" style="font-size:13px;" onchange="updateExercise(${i},'minutes',this.value)" /></div>`:'';
     return`<div style="background:#22263a;border-radius:12px;padding:12px;margin-bottom:10px;">
@@ -1218,6 +1224,7 @@ function renderExercises(){
         ${isWatch?minutesField:autoCalField}
         ${calField}
       </div>
+      ${correctionInfo}
       ${notesField}
     </div>`;
   }).join('');
