@@ -1145,9 +1145,9 @@ function renderAll(){
   document.getElementById('deficitBar').style.width=bpct+'%';
   document.getElementById('deficitBar').style.background=leftToEat<0?'#f87171':leftToEat<=200?'#6ee7b7':'linear-gradient(90deg,#fbbf24,#6ee7b7)';
   document.getElementById('deficitStats').innerHTML=[
-    {l:'🍽️ Eaten',v:fmt(t.calories)+' cal',c:t.calories<=(dynamicCalTarget())?'#6ee7b7':'#f87171'},
+    {l:'🍽️ Eaten',v:fmt(t.calories)+' cal',c:t.calories<=dynamicCalTarget()?'#6ee7b7':'#fbbf24'},
     {l:'🔥 Burned',v:'+'+fmt(burned)+' cal',c:burned>0?'#6ee7b7':'#94a3b8'},
-    {l:'🎯 Left to Eat',v:leftToEat>0?fmt(leftToEat)+' cal':'Done!',c:lteColor}
+    {l:'🎯 True Deficit',v:(td>=0?'+':'')+fmt(td)+' cal',c:td>=500&&td<=900?'#6ee7b7':td>=0?'#fbbf24':'#f87171'}
   ].map(s=>`<div style="flex:1;background:#22263a;border-radius:10px;padding:8px 4px;text-align:center;"><div style="font-size:12px;font-weight:700;color:${s.c};">${s.v}</div><div style="font-size:9px;color:#94a3b8;">${s.l}</div></div>`).join('');
   // Week pace
   const weekPaceEl=document.getElementById('weekPace');
