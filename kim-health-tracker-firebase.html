@@ -704,6 +704,7 @@ input, textarea { font-family: inherit; }
 
 <script>
 const GOALS={calories:1600,protein:110,sugar:40,carbs:150,fat:55,water:100,deficit:500,satfat:13,fiber:25,burn:450};
+const CORRECTION={walk:0.75,bike:0.60,weights:0.75,yard:0.75,carwash:0.75,cardio:0.80};
 const TDEE=1950;
 const BURN={walk:5,bike:4,weights:3.3,yard:5,carwash:4,
   jumping_jacks:9,high_knees:9,jump_rope:10,burpees:10,mountain_climbers:9,
@@ -1905,13 +1906,22 @@ function addCardio(){
 }
 function updateExercise(i,field,val){
   const watchTypes=['walk','bike','weights','yard','carwash'];
+  const cardioTypes=['jumping_jacks','high_knees','jump_rope','burpees','mountain_climbers','squat_reach','side_steps','bicycle_crunches','arm_circles','wall_pushups','pushups','plank','calf_raises','lateral_lunges','march'];
   S.exercises[i][field]=val;
-  if(watchTypes.includes(S.exercises[i].type)){
-    // Watch-tracked: use manual calorie entry
-    S.exercises[i].burned=parseFloat(S.exercises[i].manualCal)||0;
-  } else {
-    // Cardio burst: auto-calculate
-    S.exercises[i].burned=Math.round(BURN[S.exercises[i].type]*(parseFloat(S.exercises[i].minutes)||0));
+  const ex=S.exercises[i];
+  if(watchTypes.includes(ex.type)){
+    const rawCal=parseFloat(ex.manualCal)||0;
+    const factor=CORRECTION[ex.type]||0.75;
+    ex.rawCal=rawCal;
+    ex.factor=factor;
+    ex.burned=Math.round(rawCal*factor);
+    ex.discounted=Math.round(rawCal*(1-factor));
+  } else if(cardioTypes.includes(ex.type)){
+    const rawCal=Math.round(BURN[ex.type]*(parseFloat(ex.minutes)||0));
+    ex.rawCal=rawCal;
+    ex.factor=CORRECTION.cardio||0.80;
+    ex.burned=Math.round(rawCal*(CORRECTION.cardio||0.80));
+    ex.discounted=Math.round(rawCal*(1-(CORRECTION.cardio||0.80)));
   }
   persist();renderAll();
 }
