@@ -1198,16 +1198,16 @@ const tdColor=td>=500&&td<=900?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
     guidance.style.display='block';
     guidance.innerHTML=`
       <div style="font-size:12px;color:${statusColor};font-weight:700;margin-bottom:10px;text-align:center;">${statusMsg}</div>
-      <div style="display:flex;gap:8px;">
-        <div style="flex:1;background:#1a1d27;border-radius:10px;padding:10px;text-align:center;">
-          <div style="font-size:22px;">${exIcon}</div>
-          <div style="font-size:12px;color:${exColor};font-weight:700;margin-top:4px;">${exArrow}</div>
-          <div style="font-size:9px;color:#94a3b8;margin-top:2px;">EXERCISE</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:10px;background:#1a1d27;border-radius:10px;padding:10px 14px;">
+          <span style="font-size:20px;">${exIcon}</span>
+          <span style="font-size:11px;color:#94a3b8;min-width:60px;">EXERCISE</span>
+          <span style="font-size:13px;color:${exColor};font-weight:700;">${exArrow}</span>
         </div>
-        <div style="flex:1;background:#1a1d27;border-radius:10px;padding:10px;text-align:center;">
-          <div style="font-size:22px;">${foodIcon}</div>
-          <div style="font-size:12px;color:${foodColor};font-weight:700;margin-top:4px;">${foodArrow}</div>
-          <div style="font-size:9px;color:#94a3b8;margin-top:2px;">FOOD</div>
+        <div style="display:flex;align-items:center;gap:10px;background:#1a1d27;border-radius:10px;padding:10px 14px;">
+          <span style="font-size:20px;">${foodIcon}</span>
+          <span style="font-size:11px;color:#94a3b8;min-width:60px;">FOOD</span>
+          <span style="font-size:13px;color:${foodColor};font-weight:700;">${foodArrow}</span>
         </div>
       </div>`;
   } else if(guidance){
