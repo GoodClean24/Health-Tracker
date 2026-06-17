@@ -1186,9 +1186,10 @@ const tdColor=td>=500&&td<=900?'#6ee7b7':td>=0?'#fbbf24':'#f87171';
       statusMsg='On target — you\'re done eating today'; statusColor='#6ee7b7';
     } else if(td<500){
       // Need more deficit
+      const overTarget=t.calories>dynamicCalTarget();
       exIcon='🏃'; exArrow='⬆️ Add exercise'; exColor='#fbbf24';
-      foodIcon='🍽️'; foodArrow='⬇️ Eat less'; foodColor='#fbbf24';
-      statusMsg=`Need ${fmt(gap)} more — eat lighter${evening?' or add a walk':' or move more'}`; statusColor='#fbbf24';
+      foodIcon='🍽️'; foodArrow=overTarget?'⬇️ Ate too much':'✅ Keep going'; foodColor=overTarget?'#f87171':'#6ee7b7';
+      statusMsg=`Need ${fmt(gap)} more deficit — add a walk to close the gap`; statusColor='#fbbf24';
     } else {
       // Over goal — under-eating
       exIcon='🏃'; exArrow='✅ Good'; exColor='#6ee7b7';
