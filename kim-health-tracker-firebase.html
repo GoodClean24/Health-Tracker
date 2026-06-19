@@ -188,6 +188,7 @@ input, textarea { font-family: inherit; }
 
 <!-- DAILY LOG -->
 <div id="tab-daily" class="tab-content">
+  <div id="thursdayPrepBanner" style="display:none;border-radius:12px;padding:14px;margin-bottom:12px;background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.25);"></div>
   <div id="smartBannerTop" style="display:none;border-radius:12px;padding:10px 14px;margin-bottom:12px;display:none;"></div>
   <div class="card" style="margin-bottom:14px;">
     <div onclick="toggleLogFood()" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
@@ -613,6 +614,10 @@ input, textarea { font-family: inherit; }
     <div id="weightInputRow" style="display:none;background:#22263a;border-radius:12px;padding:14px;margin-bottom:14px;">
       <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Weight (lbs)</label>
       <div style="display:flex;gap:8px;margin-bottom:10px;"><input class="inp" type="number" id="weightInput" placeholder="e.g. 200.5" style="flex:1;" /></div>
+      <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Waist (inches, optional)</label>
+      <div style="display:flex;gap:8px;margin-bottom:10px;"><input class="inp" type="number" id="waistInput" placeholder="e.g. 36.5" style="flex:1;" /></div>
+      <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Notes (optional)</label>
+      <div style="display:flex;gap:8px;margin-bottom:10px;"><input class="inp" id="weightNotesInput" placeholder="e.g. bloated, TOM, slept well" style="flex:1;" /></div>
       <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Date (change if re-entering past weight)</label>
       <div style="display:flex;gap:8px;"><input class="inp" type="date" id="weightDate" style="flex:1;" /><button class="btn-green" onclick="logWeight()">Save</button></div>
     </div>
@@ -1100,6 +1105,34 @@ function macroChips(item){
 
 function renderAll(){
   const t=totals(),burned=exBurned()+Math.round(stepsBurned()*0.5),net=netCals(),wOz=S.waterCups*20;
+
+  // Thursday Weigh-In Prep Banner
+  const prepBanner=document.getElementById('thursdayPrepBanner');
+  if(prepBanner){
+    const now=new Date();
+    const isThursday=now.getDay()===4;
+    const todayK=todayKey();
+    const dismissedDate=localStorage.getItem('ht_thursdayPrepDismissed');
+    if(isThursday&&dismissedDate!==todayK){
+      prepBanner.style.display='block';
+      prepBanner.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:700;color:#6ee7b7;">⚖️ Thursday Weigh-In Prep</span>
+          <button onclick="dismissThursdayPrep()" style="background:none;border:none;color:#94a3b8;font-size:16px;cursor:pointer;padding:0 0 0 10px;">x</button>
+        </div>
+        <div style="font-size:12px;color:#e2e8f0;line-height:1.9;">
+          <div>💧 Drink extra water today</div>
+          <div>🧂 Choose lower-sodium foods when possible</div>
+          <div>🥗 Get at least 2 servings of fruits/vegetables</div>
+          <div>🍽️ Eat dinner a little earlier if possible</div>
+          <div>🍟 Avoid restaurant meals and heavy processed foods tonight</div>
+          <div>😴 Get a good night's sleep</div>
+          <div>⚖️ Weigh-in tomorrow morning</div>
+        </div>`;
+    } else {
+      prepBanner.style.display='none';
+    }
+  }
   const dayName=getDayName(),walkDay=isWalkDay(),weekend=isWeekend();
   document.getElementById('dayBadge').textContent=walkDay?'Walk Day':weekend?'Weekend Activity':'Rest or Bike Day';
   document.getElementById('todayDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -1369,7 +1402,7 @@ function renderProgress(){
     const i=S.weights.length-1-ri;
     if(w.dateKey==='start') return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2d3748;"><span style="font-size:13px;color:#94a3b8;">${w.date}</span><span style="font-size:13px;font-weight:700;color:#94a3b8;">${w.weight} lbs</span></div>`;
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2d3748;">
-      <div><div style="font-size:13px;color:#94a3b8;">${w.date}</div></div>
+      <div><div style="font-size:13px;color:#94a3b8;">${w.date}</div>${w.waist?`<div style="font-size:11px;color:#a78bfa;">Waist: ${w.waist}"</div>`:''}${w.notes?`<div style="font-size:10px;color:#94a3b8;font-style:italic;">${w.notes}</div>`:''}</div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="font-size:13px;font-weight:700;color:#6ee7b7;">${w.weight} lbs</span>
         <button onclick="editWeight(${i})" style="background:none;border:1px solid #2d3748;border-radius:6px;color:#94a3b8;cursor:pointer;font-size:11px;padding:3px 8px;">edit</button>
@@ -2040,22 +2073,17 @@ function editWeight(i){
   const w=S.weights[i];
   if(!w) return;
   S._editing={type:'weight',idx:i};
-  document.getElementById('editItemName').value=w.date;
-  document.getElementById('editItemIngredients').value=w.weight;
-  document.getElementById('editItemCal').value='';
-  document.getElementById('editItemPro').value='';
-  document.getElementById('editItemSug').value='';
-  document.getElementById('editItemCarb').value='';
-  document.getElementById('editItemFat').value='';
-  document.getElementById('editItemSatFat').value='';
-  document.getElementById('editItemFiber').value='';
   // Repurpose modal for weight edit
   document.querySelector('#editItemModal .modal-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-weight:700;font-size:16px;">Edit Weight Entry</span><button onclick="document.getElementById('editItemModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:22px;">x</button></div>
     <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Date</label>
     <input class="inp" id="editWeightDate" value="${w.date}" style="margin-bottom:10px;" />
     <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Weight (lbs)</label>
-    <input class="inp" type="number" id="editWeightVal" value="${w.weight}" style="margin-bottom:14px;" />
+    <input class="inp" type="number" id="editWeightVal" value="${w.weight}" style="margin-bottom:10px;" />
+    <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Waist (inches, optional)</label>
+    <input class="inp" type="number" id="editWaistVal" value="${w.waist||''}" style="margin-bottom:10px;" />
+    <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">Notes (optional)</label>
+    <input class="inp" id="editWeightNotesVal" value="${w.notes||''}" style="margin-bottom:14px;" />
     <button class="btn-green" onclick="saveWeightEdit(${i})" style="width:100%;">Save Changes</button>`;
   document.getElementById('editItemModal').style.display='flex';
 }
@@ -2063,8 +2091,10 @@ function editWeight(i){
 function saveWeightEdit(i){
   const date=document.getElementById('editWeightDate').value.trim();
   const weight=parseFloat(document.getElementById('editWeightVal').value);
+  const waist=parseFloat(document.getElementById('editWaistVal').value)||null;
+  const notes=document.getElementById('editWeightNotesVal').value.trim();
   if(!date||!weight) return;
-  S.weights[i]={...S.weights[i],date,weight};
+  S.weights[i]={...S.weights[i],date,weight,waist,notes};
   document.getElementById('editItemModal').style.display='none';
   persist();renderAll();showToast('Weight updated!');
 }
@@ -2086,6 +2116,10 @@ function editGoalWeight(){
   renderAll();
 }
 
+function dismissThursdayPrep(){
+  localStorage.setItem('ht_thursdayPrepDismissed',todayKey());
+  document.getElementById('thursdayPrepBanner').style.display='none';
+}
 function toggleWeightInput(){
   const r=document.getElementById('weightInputRow');
   const open=r.style.display==='none';
@@ -2100,15 +2134,19 @@ function toggleWeightInput(){
 function logWeight(){
   const w=parseFloat(document.getElementById('weightInput').value);
   if(!w||w<100||w>400)return;
+  const waist=parseFloat(document.getElementById('waistInput').value)||null;
+  const notes=document.getElementById('weightNotesInput').value.trim();
   const dateVal=document.getElementById('weightDate').value;
   const d=dateVal?new Date(dateVal+'T12:00:00'):new Date();
   const dateKey=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const dateLabel=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   S.weights=S.weights.filter(x=>x.dateKey!==dateKey);
-  S.weights.push({date:dateLabel,weight:w,dateKey});
+  S.weights.push({date:dateLabel,weight:w,dateKey,waist,notes});
   S.weights.sort((a,b)=>a.dateKey<b.dateKey?-1:1);
   document.getElementById('weightInputRow').style.display='none';
   document.getElementById('weightInput').value='';
+  document.getElementById('waistInput').value='';
+  document.getElementById('weightNotesInput').value='';
   persist();renderAll();showToast('Weight logged!');
 }
 
