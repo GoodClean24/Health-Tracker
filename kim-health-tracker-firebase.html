@@ -1542,12 +1542,57 @@ function renderProgress(){
     }).join('');
     const avgCal=wkDays.length?Math.round(wkDays.reduce((a,d)=>a+(d.calories||0),0)/wkDays.length):0;
     const avgCalLabel=wkDays.length?` · ${avgCal.toLocaleString()} avg cal/day`:'';
+    const avgBurn=wkDays.length?Math.round(wkDays.reduce((a,d)=>a+(d.burned||0),0)/wkDays.length):0;
+    const avgBurnEstimate=1950+avgBurn;
+    const avgDailyDeficit=avgBurnEstimate-avgCal;
+    const totalWeeklyDeficit=avgDailyDeficit*7;
+    const predictedLoss=totalWeeklyDeficit/3500;
+    const wkEndDate2=new Date(wk+'T12:00:00'); wkEndDate2.setDate(wkEndDate2.getDate()+6);
+    const fridaysInRange=S.weights.filter(w=>{
+      if(!w.dateKey||w.dateKey==='start') return false;
+      const wd=new Date(w.dateKey+'T12:00:00');
+      return wd>=new Date(wk+'T12:00:00')&&wd<=wkEndDate2;
+    });
+    const prevWeekStart=new Date(wk+'T12:00:00'); prevWeekStart.setDate(prevWeekStart.getDate()-7);
+    const prevWeekEnd=new Date(wk+'T12:00:00'); prevWeekEnd.setDate(prevWeekEnd.getDate()-1);
+    const prevFridays=S.weights.filter(w=>{
+      if(!w.dateKey||w.dateKey==='start') return false;
+      const wd=new Date(w.dateKey+'T12:00:00');
+      return wd>=prevWeekStart&&wd<=prevWeekEnd;
+    });
+    let scaleSection='';
+    if(fridaysInRange.length&&prevFridays.length){
+      const thisFriWeight=fridaysInRange[fridaysInRange.length-1].weight;
+      const prevFriWeight=prevFridays[prevFridays.length-1].weight;
+      const actualLoss=prevFriWeight-thisFriWeight;
+      const gap=predictedLoss-actualLoss;
+      let coachMsg='';
+      if(Math.abs(gap)<=0.3) coachMsg='✅ Great week. Data matches the scale.';
+      else if(actualLoss>predictedLoss) coachMsg='👍 Nice drop. Some may be water weight.';
+      else if(predictedLoss>=0.5&&actualLoss<predictedLoss) coachMsg='💧 Likely water/food volume. Stay the course.';
+      else coachMsg='⚠️ Calories are too close to maintenance. Need a tighter week.';
+      scaleSection=`
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:#94a3b8;">Actual Scale Change</span><span style="font-size:12px;font-weight:700;color:#e2e8f0;">${actualLoss>=0?'-':'+'}${Math.abs(actualLoss).toFixed(1)} lbs</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:11px;color:#94a3b8;">Predicted vs Actual Gap</span><span style="font-size:12px;font-weight:700;color:#e2e8f0;">${gap>=0?'+':''}${gap.toFixed(2)} lbs</span></div>
+        <div style="font-size:12px;color:#6ee7b7;font-weight:700;text-align:center;">${coachMsg}</div>`;
+    } else {
+      scaleSection=`<div style="font-size:11px;color:#94a3b8;text-align:center;">Not enough data yet — needs 2 Friday weigh-ins.</div>`;
+    }
+    const weeklySummaryHtml=wkDays.length?`<div style="background:#1a1d27;border:1px solid #2d3748;border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:700;color:#6ee7b7;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Weekly Summary</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:#94a3b8;">Avg Calories Eaten</span><span style="font-size:12px;font-weight:700;color:#e2e8f0;">${avgCal.toLocaleString()} cal</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:#94a3b8;">Avg Daily Burn Estimate</span><span style="font-size:12px;font-weight:700;color:#e2e8f0;">${avgBurnEstimate.toLocaleString()} cal</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:#94a3b8;">Avg Daily Deficit</span><span style="font-size:12px;font-weight:700;color:#e2e8f0;">${avgDailyDeficit.toLocaleString()} cal</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:#94a3b8;">Total Weekly Deficit</span><span style="font-size:12px;font-weight:700;color:#e2e8f0;">${totalWeeklyDeficit.toLocaleString()} cal</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:11px;color:#94a3b8;">Predicted Fat Loss</span><span style="font-size:12px;font-weight:700;color:#6ee7b7;">${predictedLoss.toFixed(2)} lbs</span></div>
+      <div style="border-top:1px solid #2d3748;padding-top:10px;">${scaleSection}</div>
+    </div>`:'';
     return`<div style="margin-bottom:14px;">
       <div onclick="document.getElementById('${wkId}').style.display=document.getElementById('${wkId}').style.display==='none'?'block':'none';this.querySelector('.wk-arrow').textContent=document.getElementById('${wkId}').style.display==='none'?'+':'−';" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:#22263a;border-radius:12px;padding:12px 16px;margin-bottom:8px;">
         <div><span style="font-size:13px;font-weight:700;color:${isThisWeek?'#6ee7b7':'#94a3b8'};">${isThisWeek?'This Week':'Previous Week'}</span><span style="font-size:11px;color:#94a3b8;margin-left:8px;">${wkLabel}</span><span style="font-size:11px;color:#6ee7b7;margin-left:4px;">${avgCalLabel}</span></div>
         <span class="wk-arrow" style="color:#6ee7b7;font-size:18px;">${isThisWeek?'−':'+'}</span>
       </div>
-      <div id="${wkId}" style="display:${isThisWeek?'block':'none'};">${daysHtml}</div>
+      <div id="${wkId}" style="display:${isThisWeek?'block':'none'};">${weeklySummaryHtml}${daysHtml}</div>
     </div>`;
   }).join('');
 }
